@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -11,7 +12,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
 {
     public class RabbitMqService
     {
-        private static int Count = 0;
+        private static int Count = 1;
         public RabbitMqService()
         {
         }
@@ -41,6 +42,35 @@ namespace DigitalTwin.Middleware.DataInput.Services
             }
 
             Count++;
+
+            return Task.CompletedTask;
+        }
+
+        public Task PublishAll(IEnumerable<DataInput> dataInputs)
+        {
+            var factory = new ConnectionFactory() { HostName = "localhost", Port = 5672, UserName = "guest", Password = "guest" };
+
+            using (var connection = factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+                foreach (var dataInput in dataInputs)
+                {
+                    var json = JsonConvert.SerializeObject(dataInput);
+
+                    var body = Encoding.UTF8.GetBytes(json);
+
+                    var properties = channel.CreateBasicProperties();
+                    properties.Persistent = true;
+
+                    channel.BasicPublish(exchange: "dt",
+                                         routingKey: "input",
+                                         basicProperties: properties,
+                                         body: body);
+                    Console.WriteLine($"Published message number: {Count}");
+
+                    Count++;
+                }
+            }
 
             return Task.CompletedTask;
         }

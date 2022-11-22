@@ -29,16 +29,12 @@ Console.WriteLine($"Simulation start time: {recording.Started}");
 
 var rabbitMqService = serviceProvider.GetRequiredService<RabbitMqService>();
 
-foreach (var dataEntry in recording.Data)
+var dataInputs = recording.Data.Select(dataInput => new DataInput
 {
-    //Console.WriteLine($"Position: {dataEntry.Pos[0]} - {dataEntry.Pos[1]} - {dataEntry.Pos[2]}");
-
-    var dataInput = new DataInput()
-    {
-        PosX = dataEntry.Pos[0].ToString(),
-        PosY = dataEntry.Pos[1].ToString(),
-        PosZ = dataEntry.Pos[2].ToString()
-    };
-
-    rabbitMqService.Publish(dataInput);
+    PosX = dataInput.Pos[0].ToString(),
+    PosY = dataInput.Pos[1].ToString(),
+    PosZ = dataInput.Pos[2].ToString()
 }
+).ToArray();
+
+rabbitMqService.PublishAll(dataInputs);
