@@ -455,4 +455,4 @@ $RECYCLE.BIN/
 
 
 # Middleware
-src/DigitalTwin.Middleware.DataInput/DigitalTwin.Middleware.DataInput/*.json
+src/DigitalTwin.Middleware.DataInput/*.json
