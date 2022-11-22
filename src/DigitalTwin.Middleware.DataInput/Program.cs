@@ -18,6 +18,11 @@ var serviceProvider = serviceCollection.BuildServiceProvider();
 
 var simtoCareJsonFile = "simtocare-recording.json";
 
+var fileExists = File.Exists(simtoCareJsonFile);
+
+if (!fileExists)
+    throw new FileNotFoundException($"You need to manually add the {simtoCareJsonFile} file");
+
 var recording = DataReader.Read(simtoCareJsonFile);
 
 Console.WriteLine($"Simulation start time: {recording.Started}");
