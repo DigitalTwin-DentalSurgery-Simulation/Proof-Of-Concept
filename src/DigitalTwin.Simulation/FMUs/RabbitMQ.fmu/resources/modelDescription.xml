@@ -14,7 +14,6 @@
 
     <DefaultExperiment startTime="0.0" stopTime="16.0" stepSize="0.01"/>
     <ModelVariables>
-        <!--outputs-->
         <ScalarVariable name="output_op_pos_x" valueReference="20" variability="discrete" causality="output">
             <String />
         </ScalarVariable>
@@ -24,18 +23,16 @@
         <ScalarVariable name="output_op_pos_z" valueReference="22" variability="discrete" causality="output">
             <String />
         </ScalarVariable>
-        <!--inputs-->
-        <ScalarVariable name="input_up_pos_x" valueReference="26" variability="discrete" causality="input">
-            <String start="0"/>
+        <ScalarVariable name="input_up_pos_x" valueReference="20" variability="discrete" causality="input">
+            <String start="ost"/>
         </ScalarVariable>
-        <ScalarVariable name="input_up_pos_y" valueReference="27" variability="discrete" causality="input">
-            <String start="0"/>
+        <ScalarVariable name="input_up_pos_y" valueReference="21" variability="discrete" causality="input">
+            <String start="skinke"/>
         </ScalarVariable>
-        <ScalarVariable name="input_up_pos_z" valueReference="28" variability="discrete" causality="input">
-            <String start="0"/>
+        <ScalarVariable name="input_up_pos_z" valueReference="22" variability="discrete" causality="input">
+            <String start="bank"/>
         </ScalarVariable>
-        
-
+    
         <ScalarVariable name="config.hostname" valueReference="0" variability="fixed" causality="parameter" initial="exact">
             <String start="localhost"/>
         </ScalarVariable>
@@ -88,7 +85,18 @@
             <Unknown index="1"/>
             <Unknown index="2"/>
             <Unknown index="3"/>
+            <Unknown index="4"/>
+            <Unknown index="5"/>
+            <Unknown index="6"/>
         </Outputs>
+        <InitialUnknowns>
+            <Unknown index="1" />
+            <Unknown index="2" />
+            <Unknown index="3" />
+            <Unknown index="4" />
+            <Unknown index="5" />
+            <Unknown index="6" />
+        </InitialUnknowns>
     </ModelStructure>
 
 

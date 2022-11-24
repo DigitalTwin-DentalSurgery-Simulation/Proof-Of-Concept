@@ -46,7 +46,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
             return Task.CompletedTask;
         }
 
-        public async Task PublishAll(IEnumerable<DataInput> dataInputs)
+        public Task PublishAll(IEnumerable<DataInput> dataInputs)
         {
             var factory = new ConnectionFactory() { HostName = "localhost", Port = 5672, UserName = "guest", Password = "guest" };
 
@@ -73,6 +73,8 @@ namespace DigitalTwin.Middleware.DataInput.Services
                     Thread.Sleep(100);
                 }
             }
+            
+            return Task.CompletedTask;
         }
 
     }

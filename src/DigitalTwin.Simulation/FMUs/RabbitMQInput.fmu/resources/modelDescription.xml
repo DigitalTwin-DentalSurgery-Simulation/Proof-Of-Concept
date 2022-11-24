@@ -39,7 +39,7 @@
 
 
         <ScalarVariable name="config.routingkey" valueReference="4" variability="fixed" causality="parameter" initial="exact">
-            <String start="test"/>
+            <String start="notused"/>
         </ScalarVariable>
 
         <ScalarVariable name="config.communicationtimeout" valueReference="5" variability="fixed" causality="parameter" description="Network read time out in seconds" initial="exact">
