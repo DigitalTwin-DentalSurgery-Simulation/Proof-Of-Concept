@@ -456,3 +456,7 @@ $RECYCLE.BIN/
 
 # Middleware
 src/DigitalTwin.Middleware.DataInput/*.json
+
+
+# Simulation 
+src/DigitalTwin.Simulation/FMUs/Tester.fmu
