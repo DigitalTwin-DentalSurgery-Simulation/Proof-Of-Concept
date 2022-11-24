@@ -24,24 +24,15 @@
         <ScalarVariable name="output_op_pos_z" valueReference="22" variability="discrete" causality="output">
             <String />
         </ScalarVariable>
-        <ScalarVariable name="output_up_offset_pos_x" valueReference="23" variability="discrete" causality="output">
-            <String />
-        </ScalarVariable>
-        <ScalarVariable name="output_up_offset_pos_y" valueReference="24" variability="discrete" causality="output">
-            <String />
-        </ScalarVariable>
-        <ScalarVariable name="output_up_offset_pos_z" valueReference="25" variability="discrete" causality="output">
-            <String />
-        </ScalarVariable>
         <!--inputs-->
         <ScalarVariable name="input_up_pos_x" valueReference="26" variability="discrete" causality="input">
-            <String />
+            <String start="0"/>
         </ScalarVariable>
         <ScalarVariable name="input_up_pos_y" valueReference="27" variability="discrete" causality="input">
-            <String />
+            <String start="0"/>
         </ScalarVariable>
         <ScalarVariable name="input_up_pos_z" valueReference="28" variability="discrete" causality="input">
-            <String />
+            <String start="0"/>
         </ScalarVariable>
         
 

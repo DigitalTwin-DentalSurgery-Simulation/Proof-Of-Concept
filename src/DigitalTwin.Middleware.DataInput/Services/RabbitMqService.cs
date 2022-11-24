@@ -46,7 +46,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
             return Task.CompletedTask;
         }
 
-        public Task PublishAll(IEnumerable<DataInput> dataInputs)
+        public async Task PublishAll(IEnumerable<DataInput> dataInputs)
         {
             var factory = new ConnectionFactory() { HostName = "localhost", Port = 5672, UserName = "guest", Password = "guest" };
 
@@ -69,10 +69,10 @@ namespace DigitalTwin.Middleware.DataInput.Services
                     Console.WriteLine($"Published message number: {Count}");
 
                     Count++;
+
+                    Thread.Sleep(100);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
     }

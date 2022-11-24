@@ -12,11 +12,11 @@ namespace DigitalTwin.Middleware.DataInput
     {
         [JsonProperty("time")]
         public string Time => DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:sszzzz", CultureInfo.InvariantCulture);
-        [JsonProperty("posX")]
+        [JsonProperty("output_op_pos_x")]
         public string PosX { get; set; }
-        [JsonProperty("posY")]
+        [JsonProperty("output_op_pos_y")]
         public string PosY { get; set; }
-        [JsonProperty("posZ")]
+        [JsonProperty("output_op_pos_z")]
         public string PosZ { get; set; }
     }
 }
