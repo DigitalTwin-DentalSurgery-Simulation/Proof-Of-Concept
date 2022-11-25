@@ -1,0 +1,1 @@
+{"fmus":{"{OP}":"OptimalPath.fmu","{Haptics}":"Haptics.fmu"},"connections":{"{OP}.OPInstance.string_c":["{Haptics}.HapticsInstance.string_a"]},"parameters":{}}
