@@ -70,7 +70,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
 
                     Count++;
 
-                    Thread.Sleep(1000);
+                    Thread.Sleep(50);
                 }
             }
             

@@ -11,7 +11,7 @@ namespace DigitalTwin.Middleware.DataInput
     public class DataInput
     {
         [JsonProperty("time")]
-        public string Time => DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:sszzzz", CultureInfo.InvariantCulture);
+        public string Time => DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
         [JsonProperty("output_op_pos_x")]
         public string PosX { get; set; }
         [JsonProperty("output_op_pos_y")]
