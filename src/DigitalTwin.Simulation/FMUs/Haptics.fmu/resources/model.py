@@ -3,33 +3,62 @@ import pickle
 
 class Model:
     def __init__(self) -> None:
-        self.real_a = 0.0
-        self.real_b = 0.0
-        self.integer_a = 0
-        self.integer_b = 0
-        self.boolean_a = False
-        self.boolean_b = False
-        self.string_a = ""
-        self.string_b = ""
+        self.input_user_pos_x_to_haptics = 0.0
+        self.input_user_pos_y_to_haptics = 0.0
+        self.input_user_pos_z_to_haptics = 0.0
+        self.input_op_pos_x_to_haptics = 0.0
+        self.input_op_pos_y_to_haptics = 0.0
+        self.input_op_pos_z_to_haptics = 0.0
+        self.input_errorscore_to_haptics = 0.0
 
         self.reference_to_attribute = {
-            0: "real_a",
-            1: "real_b",
-            2: "real_c",
-            3: "integer_a",
-            4: "integer_b",
-            5: "integer_c",
-            6: "boolean_a",
-            7: "boolean_b",
-            8: "boolean_c",
-            9: "string_a",
-            10: "string_b",
-            11: "string_c",
+            0: "input_user_pos_x_to_haptics",
+            1: "input_user_pos_y_to_haptics",
+            2: "input_user_pos_z_to_haptics",
+            3: "input_op_pos_x_to_haptics",
+            4: "input_op_pos_y_to_haptics",
+            5: "input_op_pos_z_to_haptics",
+            6: "input_errorscore_to_haptics",
+            7: "output_hapticfeedback_x_to_middleware",
+            8: "output_hapticfeedback_y_to_middleware",
+            9: "output_hapticfeedback_z_to_middleware",
+            10: "output_user_pos_x_to_middleware",
+            11: "output_user_pos_y_to_middleware",
+            12: "output_user_pos_z_to_middleware",
+            13: "output_op_pos_x_to_middleware",
+            14: "output_op_pos_y_to_middleware",
+            15: "output_op_pos_z_to_middleware",
         }
 
         self._update_outputs()
 
     def fmi2DoStep(self, current_time, step_size, no_step_prior):
+        """Here do something with the input parameters"""
+
+        """"Creating direction vectors"""
+        direction_vector_x = self.input_op_pos_x_to_haptics - self.input_user_pos_x_to_haptics
+        direction_vector_y = self.input_op_pos_y_to_haptics - self.input_user_pos_y_to_haptics
+        direction_vector_z = self.input_op_pos_z_to_haptics - self.input_user_pos_z_to_haptics
+
+        """Setting threshold for directed length based on errorscore"""
+        yellow_zone_start_threshold = 0.10
+        red_zone_start_threshold = 5.0
+        yellow_zone_gradient_factor = 0.10
+
+        """Calculating the force to be applied in the vector direction, based on errorscore"""
+        if self.input_errorscore_to_haptics < yellow_zone_start_threshold:
+            applied_force = 0
+        elif self.input_errorscore_to_haptics >= red_zone_start_threshold:
+            applied_force = 0.5
+        else:
+            applied_force = self.input_errorscore_to_haptics * yellow_zone_gradient_factor
+
+        """Applying force to vector direction"""
+        self.output_hapticfeedback_x_to_middleware = direction_vector_x * applied_force
+        self.output_hapticfeedback_y_to_middleware = direction_vector_y * applied_force
+        self.output_hapticfeedback_z_to_middleware = direction_vector_z * applied_force
+
+
         self._update_outputs()
         return Fmi2Status.ok
 
@@ -77,37 +106,34 @@ class Model:
 
         bytes = pickle.dumps(
             (
-                self.real_a,
-                self.real_b,
-                self.integer_a,
-                self.integer_b,
-                self.boolean_a,
-                self.boolean_b,
-                self.string_a,
-                self.string_b,
+                self.input_user_pos_x_to_haptics,
+                self.input_user_pos_y_to_haptics,
+                self.input_user_pos_z_to_haptics,
+                self.input_op_pos_x_to_haptics,
+                self.input_op_pos_y_to_haptics,
+                self.input_op_pos_z_to_haptics,
+                self.input_errorscore_to_haptics,            
             )
         )
         return Fmi2Status.ok, bytes
 
     def fmi2ExtDeserialize(self, bytes) -> int:
         (
-            real_a,
-            real_b,
-            integer_a,
-            integer_b,
-            boolean_a,
-            boolean_b,
-            string_a,
-            string_b,
+            input_user_pos_x_to_haptics,
+            input_user_pos_y_to_haptics,
+            input_user_pos_z_to_haptics,
+            input_op_pos_x_to_haptics,
+            input_op_pos_y_to_haptics,
+            input_op_pos_z_to_haptics,
+            input_errorscore_to_haptics,      
         ) = pickle.loads(bytes)
-        self.real_a = real_a
-        self.real_b = real_b
-        self.integer_a = integer_a
-        self.integer_b = integer_b
-        self.boolean_a = boolean_a
-        self.boolean_b = boolean_b
-        self.string_a = string_a
-        self.string_b = string_b
+        self.input_user_pos_x_to_haptics = input_user_pos_x_to_haptics
+        self.input_user_pos_y_to_haptics = input_user_pos_y_to_haptics
+        self.input_user_pos_z_to_haptics = input_user_pos_z_to_haptics
+        self.input_op_pos_x_to_haptics = input_op_pos_x_to_haptics
+        self.input_op_pos_y_to_haptics = input_op_pos_y_to_haptics
+        self.input_op_pos_z_to_haptics = input_op_pos_z_to_haptics
+        self.input_errorscore_to_haptics = input_errorscore_to_haptics
         self._update_outputs()
 
         return Fmi2Status.ok
@@ -128,11 +154,15 @@ class Model:
 
         return Fmi2Status.ok, values
 
+    """updating output values that are just propagated.
+    """
     def _update_outputs(self):
-        self.real_c = self.real_a + self.real_b
-        self.integer_c = self.integer_a + self.integer_b
-        self.boolean_c = self.boolean_a or self.boolean_b
-        self.string_c = self.string_a + self.string_b
+        self.output_user_pos_x_to_middleware = self.input_user_pos_x_to_haptics
+        self.output_user_pos_y_to_middleware = self.input_user_pos_y_to_haptics
+        self.output_user_pos_z_to_middleware = self.input_user_pos_z_to_haptics
+        self.output_op_pos_x_to_middleware = self.input_op_pos_x_to_haptics
+        self.output_op_pos_y_to_middleware = self.input_op_pos_y_to_haptics
+        self.output_op_pos_z_to_middleware = self.input_op_pos_z_to_haptics
 
 
 class Fmi2Status:
@@ -162,6 +192,7 @@ class Fmi2Status:
 if __name__ == "__main__":
     m = Model()
 
+    """ for debugging
     assert m.real_a == 0.0
     assert m.real_b == 0.0
     assert m.real_c == 0.0
@@ -189,4 +220,4 @@ if __name__ == "__main__":
     assert m.real_c == 3.0
     assert m.integer_c == 3
     assert m.boolean_c == True
-    assert m.string_c == "Hello World!"
+    assert m.string_c == "Hello World!"""
