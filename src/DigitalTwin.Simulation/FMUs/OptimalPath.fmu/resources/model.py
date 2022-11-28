@@ -1,46 +1,64 @@
 import pickle
 import os
+import json
 
 class Model:
     def __init__(self) -> None:
-        self.real_a = 0.0
-        self.real_b = 0.0
-        self.integer_a = 0
-        self.integer_b = 0
-        self.boolean_a = False
-        self.boolean_b = False
-        self.string_a = ""
-        self.string_b = ""
+        self.input_user_pos_x_to_op = 0.0
+        self.input_user_pos_y_to_op = 0.0
+        self.input_user_pos_z_to_op = 0.0
+        self.input_step_to_op = 0
+        self.output_user_pos_x_to_haptics = 0.0
+        self.output_user_pos_y_to_haptics = 0.0
+        self.output_user_pos_z_to_haptics = 0.0
+        self.output_op_pos_x_to_haptics = 0.0
+        self.output_op_pos_y_to_haptics = 0.0
+        self.output_op_pos_z_to_haptics = 0.0
+        self.output_errorscore_to_haptics = 0.0
+
+        self.simtoCareJson = None
 
         self.reference_to_attribute = {
-            0: "real_a",
-            1: "real_b",
-            2: "real_c",
-            3: "integer_a",
-            4: "integer_b",
-            5: "integer_c",
-            6: "boolean_a",
-            7: "boolean_b",
-            8: "boolean_c",
-            9: "string_a",
-            10: "string_b",
-            11: "string_c",
+            0: "input_user_pos_x_to_op",
+            1: "input_user_pos_y_to_op",
+            2: "input_user_pos_z_to_op",
+            3: "output_user_pos_x_to_haptics",
+            4: "output_user_pos_y_to_haptics",
+            5: "output_user_pos_z_to_haptics",
+            6: "output_op_pos_x_to_haptics",
+            7: "output_op_pos_y_to_haptics",
+            8: "output_op_pos_z_to_haptics",
+            9: "output_errorscore_to_haptics",
+            10: "input_step_to_op"
         }
 
         self._update_outputs()
 
     def fmi2DoStep(self, current_time, step_size, no_step_prior):
+        
+        if(self.simtoCareJson is None):
+            simtoCareJsonFilePath = "simtocare-recording.json"
+            simtoCareJsonFile = open(simtoCareJsonFilePath, 'r')
+            self.simtoCareJson = json.load(simtoCareJsonFile)
+        
+        data = recording['data'][self.input_step_to_op]
+
+        optimal_path_position = data['pos']
+
+        optimalPathPosition = Position(optimal_path_position)
+        
+        mean_absolute_error = abs(
+            self.input_user_pos_x_to_op-optimalPathPosition.optimal_path_x 
+            + self.input_user_pos_y_to_op-optimalPathPosition.optimal_path_y 
+            + self.input_user_pos_z_to_op-optimalPathPosition.optimal_path_z
+            ) / 3
+
+        self.output_op_pos_x_to_haptics = optimalPathPosition.optimal_path_x
+        self.output_op_pos_y_to_haptics = optimalPathPosition.optimal_path_y
+        self.output_op_pos_z_to_haptics = optimalPathPosition.optimal_path_z
+        self.output_errorscore_to_haptics = mean_absolute_error
+        
         self._update_outputs()
-
-        currentdircotry = os.getcwd()
-
-        print("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH/////")
-        print("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH/////")
-        print("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH/////")
-        print("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH/////")
-
-        print(currentdircotry)
-
         return Fmi2Status.ok
 
     def fmi2EnterInitializationMode(self):
@@ -88,37 +106,25 @@ class Model:
 
         bytes = pickle.dumps(
             (
-                self.real_a,
-                self.real_b,
-                self.integer_a,
-                self.integer_b,
-                self.boolean_a,
-                self.boolean_b,
-                self.string_a,
-                self.string_b,
+                self.input_user_pos_x_to_op,
+                self.input_user_pos_y_to_op,
+                self.input_user_pos_z_to_op,
+                self.input_step_to_op
             )
         )
         return Fmi2Status.ok, bytes
 
     def fmi2ExtDeserialize(self, bytes) -> int:
         (
-            real_a,
-            real_b,
-            integer_a,
-            integer_b,
-            boolean_a,
-            boolean_b,
-            string_a,
-            string_b,
+            input_user_pos_x_to_op,
+            input_user_pos_y_to_op,
+            input_user_pos_z_to_op,
+            input_step_to_op
         ) = pickle.loads(bytes)
-        self.real_a = real_a
-        self.real_b = real_b
-        self.integer_a = integer_a
-        self.integer_b = integer_b
-        self.boolean_a = boolean_a
-        self.boolean_b = boolean_b
-        self.string_a = string_a
-        self.string_b = string_b
+        self.input_user_pos_x_to_op = input_user_pos_x_to_op
+        self.input_user_pos_y_to_op = input_user_pos_y_to_op
+        self.input_user_pos_z_to_op = input_user_pos_z_to_op
+        self.input_step_to_op = input_step_to_op
         self._update_outputs()
 
         return Fmi2Status.ok
@@ -140,11 +146,16 @@ class Model:
         return Fmi2Status.ok, values
 
     def _update_outputs(self):
-        self.real_c = self.real_a + self.real_b
-        self.integer_c = self.integer_a + self.integer_b
-        self.boolean_c = self.boolean_a or self.boolean_b
-        self.string_c = self.string_a + self.string_b
+        self.output_user_pos_x_to_haptics = self.input_user_pos_x_to_op
+        self.output_user_pos_y_to_haptics = self.input_user_pos_y_to_op
+        self.output_user_pos_z_to_haptics = self.input_user_pos_z_to_op
 
+
+class Position:
+    def __init__(self, json):
+        self.optimal_path_x = json[0]
+        self.optimal_path_y = json[1]
+        self.optimal_path_z = json[2]
 
 class Fmi2Status:
     """Represents the status of the FMU or the results of function calls.
@@ -171,33 +182,27 @@ class Fmi2Status:
 
 
 if __name__ == "__main__":
-    m = Model()
 
-    assert m.real_a == 0.0
-    assert m.real_b == 0.0
-    assert m.real_c == 0.0
-    assert m.integer_a == 0
-    assert m.integer_b == 0
-    assert m.integer_c == 0
-    assert m.boolean_a == False
-    assert m.boolean_b == False
-    assert m.boolean_c == False
-    assert m.string_a == ""
-    assert m.string_b == ""
-    assert m.string_c == ""
+    simtoCareJsonFilePath = "resources/simtocare-recording.json"
+    simtoCareJsonFile = open(simtoCareJsonFilePath, 'r')
 
-    m.real_a = 1.0
-    m.real_b = 2.0
-    m.integer_a = 1
-    m.integer_b = 2
-    m.boolean_a = True
-    m.boolean_b = False
-    m.string_a = "Hello "
-    m.string_b = "World!"
+    if(simtoCareJsonFile.closed):
+        print('WTF')
 
-    assert m.fmi2DoStep(0.0, 1.0, False) == Fmi2Status.ok
+    recording_step = 0
 
-    assert m.real_c == 3.0
-    assert m.integer_c == 3
-    assert m.boolean_c == True
-    assert m.string_c == "Hello World!"
+    recording = json.load(simtoCareJsonFile)
+
+    data = recording['data'][recording_step]
+
+    optimal_path = data['pos']
+
+    optimalPathPosition = Position(optimal_path)
+
+    print(optimalPathPosition.optimal_path_x)
+    print(optimalPathPosition.optimal_path_y)
+    print(optimalPathPosition.optimal_path_z)
+
+    mae = abs( - optimalPathPosition.optimal_path_x + - optimalPathPosition.optimal_path_y + - optimalPathPosition.optimal_path_z) / 3
+
+

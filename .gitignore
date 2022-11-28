@@ -460,3 +460,4 @@ src/DigitalTwin.Middleware.DataInput/*.json
 
 # Simulation 
 src/DigitalTwin.Simulation/FMUs/Tester.fmu
+src/DigitalTwin.Simulation/FMUs/OptimalPath.fmu/resources/*.json

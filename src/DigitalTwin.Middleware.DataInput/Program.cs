@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using DigitalTwin.Middleware.DataInput;
+using DigitalTwin.Middleware.DataInput.Models;
 using DigitalTwin.Middleware.DataInput.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ Console.WriteLine("SimToCare Simulator Data Input");
 var serviceCollection = new ServiceCollection();
 
 serviceCollection.AddTransient<RabbitMqService>();
+serviceCollection.AddTransient<UserPointCalculator>();
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -29,12 +31,14 @@ Console.WriteLine($"Simulation start time: {recording.Started}");
 
 var rabbitMqService = serviceProvider.GetRequiredService<RabbitMqService>();
 
-var dataInputs = recording.Data.Select(dataInput => new DataInput
-{
-    PosX = dataInput.Pos[0].ToString(),
-    PosY = dataInput.Pos[1].ToString(),
-    PosZ = dataInput.Pos[2].ToString()
-}
-).ToArray();
+var dataInput = recording.Data.Select(dataInput => new UserBehaviourInput(
+    dataInput.Pos[0],
+    dataInput.Pos[1],
+    dataInput.Pos[2]
+    )
+).FirstOrDefault();
 
-rabbitMqService.PublishAll(dataInputs);
+if (dataInput is null)
+    throw new ArgumentNullException(nameof(dataInput));
+
+rabbitMqService.PublishAndWaitForConsumerEvent(dataInput);
