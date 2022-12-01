@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using DigitalTwin.Middleware.DataInput;
+using DigitalTwin.Middleware.DataInput.Cache;
 using DigitalTwin.Middleware.DataInput.Models;
 using DigitalTwin.Middleware.DataInput.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +17,6 @@ var serviceCollection = new ServiceCollection();
 serviceCollection.AddTransient<RabbitMqService>();
 serviceCollection.AddTransient<UserPointCalculator>();
 
-var serviceProvider = serviceCollection.BuildServiceProvider();
-
 var simtoCareJsonFile = "simtocare-recording.json";
 
 var fileExists = File.Exists(simtoCareJsonFile);
@@ -26,6 +25,12 @@ if (!fileExists)
     throw new FileNotFoundException($"You need to manually add the {simtoCareJsonFile} file");
 
 var recording = DataReader.Read(simtoCareJsonFile);
+
+var RecordingCache = new RecordingCache(recording);
+
+serviceCollection.AddSingleton(RecordingCache);
+
+var serviceProvider = serviceCollection.BuildServiceProvider();
 
 Console.WriteLine($"Simulation start time: {recording.Started}");
 

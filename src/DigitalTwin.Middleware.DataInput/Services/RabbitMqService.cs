@@ -100,15 +100,40 @@ namespace DigitalTwin.Middleware.DataInput.Services
                     if (hapticOutput is null)
                         throw new ArgumentNullException(nameof(hapticOutput));
 
-                    var calculateNextPoint  = UserPointCalculator.CalculateNextStep(hapticOutput, Count);
+                    var calculateNextPoint = userPointCalculator.CalculateNextStep(hapticOutput, Count);
+
+                    if (calculateNextPoint is null)
+                        throw new ArgumentNullException("The procedure seems to be finished");
 
                     var properties = channel.CreateBasicProperties();
                     properties.Persistent = true;
 
+                    var visualizationInput = new VisualizationInput()
+                    {
+                        UserPosX = hapticOutput.OutputUserPosXToMiddleware,
+                        UserPosY = hapticOutput.OutputUserPosYToMiddleware,
+                        UserPosZ = hapticOutput.OutputUserPosZToMiddleware,
+                        OpPosX = hapticOutput.OutputOpPosXToMiddleware,
+                        OpPosY = hapticOutput.OutputOpPosYToMiddleware,
+                        OpPosZ = hapticOutput.OutputOpPosZToMiddleware
+                    };
+
+                    var visualizationJson = JsonConvert.SerializeObject(visualizationInput);
+                    var visualizationBody = Encoding.UTF8.GetBytes(visualizationJson);
+
+                    var inputJson = JsonConvert.SerializeObject(calculateNextPoint);
+                    var inputBody = Encoding.UTF8.GetBytes(inputJson);
+
+                    channel.BasicPublish(exchange: "dt",
+                                            routingKey: "visualization",
+                                            basicProperties: properties,
+                                            body: visualizationBody);
+
                     channel.BasicPublish(exchange: "dt",
                                             routingKey: "input",
                                             basicProperties: properties,
-                                            body: body);
+                                            body: inputBody);
+
                     Console.WriteLine($"Published message number: {Count}");
 
                     Count++;
@@ -133,7 +158,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
 
                 Count++;
 
-                Console.WriteLine("Ready to receive another event...");
+                Console.WriteLine("Ready to receive events...");
                 Console.ReadLine();
             }
 
