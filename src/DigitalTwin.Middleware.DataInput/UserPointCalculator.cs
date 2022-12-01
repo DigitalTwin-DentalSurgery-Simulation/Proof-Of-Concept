@@ -54,8 +54,7 @@ namespace DigitalTwin.Middleware.DataInput
             return new UserBehaviourInput(
                 newUserXStep,
                 newUserYStep,
-                newUserZStep,
-                step
+                newUserZStep
                 );
         }
 
