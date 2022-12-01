@@ -38,48 +38,30 @@
     <ScalarVariable name="input_errorscore_to_haptics" valueReference="6" variability="continuous" causality="input">
       <Real start="0.0" />
     </ScalarVariable>
-    <!--Index of variable = "8"-->
-    <!--<ScalarVariable name="output_hapticfeedback_force_to_middleware" valueReference="7" variability="continuous" causality="output">
-      <Real />
-    </ScalarVariable>-->
-    <!--Index of variable = "9"-->
-    <!--<ScalarVariable name="output_hapticfeedback_direction_to_middleware" valueReference="8" variability="continuous" causality="output">
-      <Real />
-    </ScalarVariable>-->
-        <!--Index of variable = "10"-->
-    <!--Index of variable = "8"-->
     <ScalarVariable name="output_hapticfeedback_x_to_middleware" valueReference="7" variability="continuous" causality="output">
       <Real />
-    </ScalarVariable>-->
-    <!--Index of variable = "9"-->
+    </ScalarVariable>
     <ScalarVariable name="output_hapticfeedback_y_to_middleware" valueReference="8" variability="continuous" causality="output">
       <Real />
-    </ScalarVariable>-->    
-    <!--Index of variable = "10"-->
+    </ScalarVariable> 
     <ScalarVariable name="output_hapticfeedback_z_to_middleware" valueReference="9" variability="continuous" causality="output">
       <Real />
-    </ScalarVariable>-->    
-    <!--Index of variable = "11"-->
+    </ScalarVariable>
     <ScalarVariable name="output_user_pos_x_to_middleware" valueReference="10" variability="continuous" causality="output">
       <Real />
     </ScalarVariable>
-    <!--Index of variable = "12"-->
     <ScalarVariable name="output_user_pos_y_to_middleware" valueReference="11" variability="continuous" causality="output">
       <Real />
     </ScalarVariable>
-    <!--Index of variable = "13"-->
     <ScalarVariable name="output_user_pos_z_to_middleware" valueReference="12" variability="continuous" causality="output">
       <Real />
     </ScalarVariable>
-    <!--Index of variable = "14"-->
     <ScalarVariable name="output_op_pos_x_to_middleware" valueReference="13" variability="continuous" causality="output">
       <Real />
     </ScalarVariable>
-    <!--Index of variable = "15"-->
     <ScalarVariable name="output_op_pos_y_to_middleware" valueReference="14" variability="continuous" causality="output">
       <Real />
     </ScalarVariable>
-    <!--Index of variable = "16"-->
     <ScalarVariable name="output_op_pos_z_to_middleware" valueReference="15" variability="continuous" causality="output">
       <Real />
     </ScalarVariable>
