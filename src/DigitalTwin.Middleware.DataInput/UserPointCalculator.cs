@@ -9,7 +9,7 @@ namespace DigitalTwin.Middleware.DataInput
 {
     public class UserPointCalculator
     {
-        public UserBehaviourInput CalculateNextStep(HapticOutput hapticOutput, int step)
+        public static UserBehaviourInput CalculateNextStep(HapticOutput hapticOutput, int step)
         {
             return new UserBehaviourInput(
                 0.0F,

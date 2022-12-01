@@ -100,7 +100,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
                     if (hapticOutput is null)
                         throw new ArgumentNullException(nameof(hapticOutput));
 
-                    var calculateNextPoint  = userPointCalculator.CalculateNextStep(hapticOutput, Count);
+                    var calculateNextPoint  = UserPointCalculator.CalculateNextStep(hapticOutput, Count);
 
                     var properties = channel.CreateBasicProperties();
                     properties.Persistent = true;
