@@ -5,6 +5,7 @@ using RabbitMQ.Client.Events;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -16,6 +17,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
     {
         private static int Count = 0;
         private readonly UserPointCalculator userPointCalculator;
+        private static UserBehaviourInput? lastInput;
 
         public RabbitMqService(UserPointCalculator userPointCalculator)
         {
@@ -33,7 +35,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
-                    Count += 1;
+      
 
                     var body = ea.Body.ToArray();
 
@@ -45,21 +47,73 @@ namespace DigitalTwin.Middleware.DataInput.Services
                     if (hapticOutput is null)
                         throw new ArgumentNullException(nameof(hapticOutput));
 
-                    if (hapticOutput.OutputUserPosZToMiddleware is 0.00F)
+                    if(hapticOutput.OutputOpPosXToMiddleware == default)
                     {
                         Console.WriteLine("Time is null");
+
+                        // This is wrong - should not be initial again
+                        var json = JsonConvert.SerializeObject(initialUserInput);
+
+                        var body2 = Encoding.UTF8.GetBytes(json);
+
+                        var properties = channel.CreateBasicProperties();
+                        properties.Persistent = true;
+
+                        lastInput = initialUserInput;
+
+                        Thread.Sleep(45);
+
+                        channel.BasicPublish(exchange: "dt",
+                            routingKey: "input",
+                            basicProperties: properties,
+                            body: body2);
+                    }
+                    else if (hapticOutput.OutputUserPosXToMiddleware == default(float))
+                    {
+                        Console.WriteLine($"Value that triggers resend: {hapticOutput.OutputUserPosXToMiddleware}");
+                        Console.WriteLine("Resending....");
+
+                        // This is wrong - should not be initial again
+                        var json = JsonConvert.SerializeObject(initialUserInput);
+
+                        var body2 = Encoding.UTF8.GetBytes(json);
+
+                        var properties = channel.CreateBasicProperties();
+                        properties.Persistent = true;
+
+                        Thread.Sleep(45);
+
+                        if (lastInput is null)
+                            throw new ArgumentNullException(nameof(lastInput));
+
+                        lastInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
+
+                        var inputJson = JsonConvert.SerializeObject(lastInput);
+                        var inputBody = Encoding.UTF8.GetBytes(inputJson);
+
+                        channel.BasicPublish(exchange: "dt",
+                            routingKey: "input",
+                            basicProperties: properties,
+                            body: inputBody);
                     }
                     else
                     {
                         Console.WriteLine("Time is not null");
 
+                        Count += 1;
+
                         var calculateNextPoint = userPointCalculator.CalculateNextStep(hapticOutput, Count);
+
+                        lastInput = calculateNextPoint;
 
                         if (calculateNextPoint is null)
                             throw new ArgumentNullException("The procedure seems to be finished");
 
                         var properties = channel.CreateBasicProperties();
                         properties.Persistent = true;
+
+                        if(hapticOutput.OutputUserPosXToMiddleware == 0.0F)
+                            Console.WriteLine("It happened");
 
                         var visualizationInput = new VisualizationInput()
                         {
@@ -77,7 +131,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
                         var inputJson = JsonConvert.SerializeObject(calculateNextPoint);
                         var inputBody = Encoding.UTF8.GetBytes(inputJson);
 
-                        Thread.Sleep(100);
+                        Thread.Sleep(45);
 
                         channel.BasicPublish(exchange: "dt",
                                                 routingKey: "visualization",
@@ -102,13 +156,14 @@ namespace DigitalTwin.Middleware.DataInput.Services
                 properties.Persistent = true;
 
                 channel.BasicPublish(exchange: "dt",
-                                        routingKey: "input",
-                                        basicProperties: properties,
-                                        body: body);
+                    routingKey: "input",
+                    basicProperties: properties,
+                    body: body);
+
                 Console.WriteLine($"Published message number: {Count}");
 
                 channel.BasicConsume(queue: "fromsim",
-                     autoAck: false,
+                     autoAck: true,
                      consumer: consumer);
 
                 Console.WriteLine("Ready to receive events...");

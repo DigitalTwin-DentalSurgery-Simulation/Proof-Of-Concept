@@ -4,7 +4,7 @@ import json
 
 class Model:
     def __init__(self) -> None:
-        self.input_user_pos_x_to_op = 0.0
+        self.input_user_pos_x_to_op = 5.0
         self.input_user_pos_y_to_op = 0.0
         self.input_user_pos_z_to_op = 0.0
         self.input_step_to_op = 0
@@ -17,10 +17,6 @@ class Model:
 
         self.temp_output_errorscore_to_haptics = 0.0
 
-        self.temp_output_op_pos_x_to_haptics = 0.0
-        self.temp_output_op_pos_y_to_haptics = 0.0
-        self.temp_output_op_pos_z_to_haptics = 0.0
-
         self.reference_to_attribute = {
             0: "input_user_pos_x_to_op",
             1: "input_user_pos_y_to_op",
@@ -31,14 +27,16 @@ class Model:
             6: "output_op_pos_x_to_haptics",
             7: "output_op_pos_y_to_haptics",
             8: "output_op_pos_z_to_haptics",
-            9: "output_errorscore_to_haptics",
-            10: "input_step_to_op"
+            9: "output_errorscore_to_haptics"
         }
 
         self._update_outputs()
 
     def fmi2DoStep(self, current_time, step_size, no_step_prior):
-        print("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
+        if(self.input_user_pos_x_to_op == 0.0):
+            self.input_user_pos_x_to_op = 2.00
+            self.input_user_pos_y_to_op = 2.00
+            self.input_user_pos_z_to_op = 2.00
         
         if(self.simtoCareJson is None):
             simtoCareJsonFilePath = "simtocare-recording.json"
@@ -48,7 +46,7 @@ class Model:
         data = self.simtoCareJson['data'][self.input_step_to_op]
 
         self.input_step_to_op += 1
-
+    
         optimal_path_position = data['pos']
 
         optimalPathPosition = Position(optimal_path_position)
@@ -59,12 +57,21 @@ class Model:
             + self.input_user_pos_z_to_op-optimalPathPosition.optimal_path_z
             ) / 3
 
+        print(f'mean absute error: {mean_absolute_error}')
+
         self.temp_output_op_pos_x_to_haptics = optimalPathPosition.optimal_path_x
         self.temp_output_op_pos_y_to_haptics = optimalPathPosition.optimal_path_y
         self.temp_output_op_pos_z_to_haptics = optimalPathPosition.optimal_path_z
         self.temp_output_errorscore_to_haptics = mean_absolute_error
-        
+
+        print(f'Optimal Path: {self.input_user_pos_x_to_op}')
+
         self._update_outputs()
+
+        if(self.output_user_pos_x_to_haptics == 0.0 or self.output_user_pos_y_to_haptics == 0.0 or self.output_user_pos_x_to_haptics == 0.0):
+            print("Optimal Path")
+
+
         return Fmi2Status.ok
 
     def fmi2EnterInitializationMode(self):

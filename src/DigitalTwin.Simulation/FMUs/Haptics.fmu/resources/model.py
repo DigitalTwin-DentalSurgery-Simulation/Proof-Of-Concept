@@ -3,9 +3,9 @@ import pickle
 
 class Model:
     def __init__(self) -> None:
-        self.input_user_pos_x_to_haptics = 0.0
-        self.input_user_pos_y_to_haptics = 0.0
-        self.input_user_pos_z_to_haptics = 0.0
+        self.input_user_pos_x_to_haptics = 3.0
+        self.input_user_pos_y_to_haptics = 2.0
+        self.input_user_pos_z_to_haptics = 1.0
         self.input_op_pos_x_to_haptics = 0.0
         self.input_op_pos_y_to_haptics = 0.0
         self.input_op_pos_z_to_haptics = 0.0
@@ -45,7 +45,6 @@ class Model:
 
     def fmi2DoStep(self, current_time, step_size, no_step_prior):
         """Here do something with the input parameters"""
-        print("AJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ")
 
         """"Creating direction vectors"""
         direction_vector_x = self.input_op_pos_x_to_haptics - self.input_user_pos_x_to_haptics
@@ -70,8 +69,13 @@ class Model:
         self.temp_output_hapticfeedback_y_to_middleware = direction_vector_y * applied_force
         self.temp_output_hapticfeedback_z_to_middleware = direction_vector_z * applied_force
 
+        print(f'Haptics: {self.input_user_pos_x_to_haptics}')
 
         self._update_outputs()
+
+        if(self.output_user_pos_x_to_middleware == 0.0 or self.output_user_pos_y_to_middleware == 0.0 or self.output_user_pos_x_to_middleware == 0.0):
+            print("Haptic Output")
+
         return Fmi2Status.ok
 
     def fmi2EnterInitializationMode(self):
@@ -169,6 +173,7 @@ class Model:
     """updating output values that are just propagated.
     """
     def _update_outputs(self):
+        print(f'UpdateOutputs: {self.input_user_pos_x_to_haptics}')
         self.output_user_pos_x_to_middleware = self.input_user_pos_x_to_haptics
         self.output_user_pos_y_to_middleware = self.input_user_pos_y_to_haptics
         self.output_user_pos_z_to_middleware = self.input_user_pos_z_to_haptics

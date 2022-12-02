@@ -18,7 +18,7 @@ namespace DigitalTwin.Middleware.DataInput.Models
         }
 
         [JsonProperty("time")]
-        public string Time => DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
+        public string Time { get; set; } = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
         [JsonProperty("output_user_pos_x_to_op")]
         public float UserPositionX { get; set; }
         [JsonProperty("output_user_pos_y_to_op")]

@@ -51,6 +51,13 @@ namespace DigitalTwin.Middleware.DataInput
             var newUserYStep = currentYUserInput + hapticOutput.OutputHapticFeedbackY + (nextYUserInput - currentYUserInput) + randomNoise;
             var newUserZStep = currentZUserInput + hapticOutput.OutputHapticFeedbackZ + (nextZUserInput - currentZUserInput) + randomNoise;
 
+            if(newUserXStep == 0.0F)
+                Console.WriteLine(
+                    $"NewUserStepX = {newUserXStep} \n" +
+                    $"NewUserStepY = {newUserYStep} \n" +
+                    $"NewUserStepZ = {newUserZStep} \n"
+                    );
+
             return new UserBehaviourInput(
                 newUserXStep,
                 newUserYStep,
