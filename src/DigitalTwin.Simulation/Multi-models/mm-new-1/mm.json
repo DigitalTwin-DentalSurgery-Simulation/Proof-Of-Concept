@@ -1,1 +1,0 @@
-{"fmus":{"{output}":"RabbitMQ.fmu","{Input}":"RabbitMQInput.fmu"},"connections":{"{output}.outputInstance.output_op_pos_x":["{Input}.InputInstance.input_up_pos_x"],"{output}.outputInstance.output_op_pos_y":["{Input}.InputInstance.input_up_pos_y"],"{output}.outputInstance.output_op_pos_z":["{Input}.InputInstance.input_up_pos_z"]},"parameters":{}}

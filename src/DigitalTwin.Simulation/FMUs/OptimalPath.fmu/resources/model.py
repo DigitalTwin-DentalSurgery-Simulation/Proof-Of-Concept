@@ -8,15 +8,18 @@ class Model:
         self.input_user_pos_y_to_op = 0.0
         self.input_user_pos_z_to_op = 0.0
         self.input_step_to_op = 0
-        self.output_user_pos_x_to_haptics = 0.0
-        self.output_user_pos_y_to_haptics = 0.0
-        self.output_user_pos_z_to_haptics = 0.0
-        self.output_op_pos_x_to_haptics = 0.0
-        self.output_op_pos_y_to_haptics = 0.0
-        self.output_op_pos_z_to_haptics = 0.0
-        self.output_errorscore_to_haptics = 0.0
 
         self.simtoCareJson = None
+
+        self.temp_output_op_pos_x_to_haptics = 0.0
+        self.temp_output_op_pos_y_to_haptics = 0.0
+        self.temp_output_op_pos_z_to_haptics = 0.0
+
+        self.temp_output_errorscore_to_haptics = 0.0
+
+        self.temp_output_op_pos_x_to_haptics = 0.0
+        self.temp_output_op_pos_y_to_haptics = 0.0
+        self.temp_output_op_pos_z_to_haptics = 0.0
 
         self.reference_to_attribute = {
             0: "input_user_pos_x_to_op",
@@ -35,13 +38,16 @@ class Model:
         self._update_outputs()
 
     def fmi2DoStep(self, current_time, step_size, no_step_prior):
+        print("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
         
         if(self.simtoCareJson is None):
             simtoCareJsonFilePath = "simtocare-recording.json"
             simtoCareJsonFile = open(simtoCareJsonFilePath, 'r')
             self.simtoCareJson = json.load(simtoCareJsonFile)
         
-        data = recording['data'][self.input_step_to_op]
+        data = self.simtoCareJson['data'][self.input_step_to_op]
+
+        self.input_step_to_op += 1
 
         optimal_path_position = data['pos']
 
@@ -53,10 +59,10 @@ class Model:
             + self.input_user_pos_z_to_op-optimalPathPosition.optimal_path_z
             ) / 3
 
-        self.output_op_pos_x_to_haptics = optimalPathPosition.optimal_path_x
-        self.output_op_pos_y_to_haptics = optimalPathPosition.optimal_path_y
-        self.output_op_pos_z_to_haptics = optimalPathPosition.optimal_path_z
-        self.output_errorscore_to_haptics = mean_absolute_error
+        self.temp_output_op_pos_x_to_haptics = optimalPathPosition.optimal_path_x
+        self.temp_output_op_pos_y_to_haptics = optimalPathPosition.optimal_path_y
+        self.temp_output_op_pos_z_to_haptics = optimalPathPosition.optimal_path_z
+        self.temp_output_errorscore_to_haptics = mean_absolute_error
         
         self._update_outputs()
         return Fmi2Status.ok
@@ -149,7 +155,10 @@ class Model:
         self.output_user_pos_x_to_haptics = self.input_user_pos_x_to_op
         self.output_user_pos_y_to_haptics = self.input_user_pos_y_to_op
         self.output_user_pos_z_to_haptics = self.input_user_pos_z_to_op
-
+        self.output_op_pos_x_to_haptics = self.temp_output_op_pos_x_to_haptics
+        self.output_op_pos_y_to_haptics = self.temp_output_op_pos_y_to_haptics
+        self.output_op_pos_z_to_haptics = self.temp_output_op_pos_z_to_haptics
+        self.output_errorscore_to_haptics = self.temp_output_errorscore_to_haptics
 
 class Position:
     def __init__(self, json):

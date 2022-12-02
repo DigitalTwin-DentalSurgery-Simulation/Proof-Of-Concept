@@ -22,65 +22,6 @@ namespace DigitalTwin.Middleware.DataInput.Services
             this.userPointCalculator = userPointCalculator;
         }
 
-        public Task Publish(UserBehaviourInput dataInput)
-        {
-            var factory = new ConnectionFactory() { HostName = "localhost", Port = 5672, UserName = "guest", Password = "guest" };
-
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
-            {
-                var json = JsonConvert.SerializeObject(dataInput);
-
-                var body = Encoding.UTF8.GetBytes(json);
-
-                var properties = channel.CreateBasicProperties();
-                properties.Persistent = true;
-
-                channel.BasicPublish(exchange: "dt",
-                                     routingKey: "input",
-                                     basicProperties: properties,
-                                     body: body);
-                Console.WriteLine($"Published message number: {Count}");
-
-
-            }
-
-            Count++;
-
-            return Task.CompletedTask;
-        }
-
-        public Task PublishAll(IEnumerable<UserBehaviourInput> dataInputs)
-        {
-            var factory = new ConnectionFactory() { HostName = "localhost", Port = 5672, UserName = "guest", Password = "guest" };
-
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
-            {
-                foreach (var dataInput in dataInputs)
-                {
-                    var json = JsonConvert.SerializeObject(dataInput);
-
-                    var body = Encoding.UTF8.GetBytes(json);
-
-                    var properties = channel.CreateBasicProperties();
-                    properties.Persistent = true;
-
-                    channel.BasicPublish(exchange: "dt",
-                                         routingKey: "input",
-                                         basicProperties: properties,
-                                         body: body);
-                    Console.WriteLine($"Published message number: {Count}");
-
-                    Count++;
-
-                    Thread.Sleep(50);
-                }
-            }
-            
-            return Task.CompletedTask;
-        }
-
         public Task PublishAndWaitForConsumerEvent(UserBehaviourInput initialUserInput)
         {
             var factory = new ConnectionFactory() { HostName = "localhost", Port = 5672, UserName = "guest", Password = "guest" };
@@ -88,59 +29,69 @@ namespace DigitalTwin.Middleware.DataInput.Services
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
+
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
+                    Count += 1;
+
                     var body = ea.Body.ToArray();
 
                     var content  = Encoding.UTF8.GetString(body);
 
                     var hapticOutput = JsonConvert.DeserializeObject<HapticOutput>(content);
 
+
                     if (hapticOutput is null)
                         throw new ArgumentNullException(nameof(hapticOutput));
 
-                    var calculateNextPoint = userPointCalculator.CalculateNextStep(hapticOutput, Count);
-
-                    if (calculateNextPoint is null)
-                        throw new ArgumentNullException("The procedure seems to be finished");
-
-                    var properties = channel.CreateBasicProperties();
-                    properties.Persistent = true;
-
-                    var visualizationInput = new VisualizationInput()
+                    if (hapticOutput.OutputUserPosZToMiddleware is 0.00F)
                     {
-                        UserPosX = hapticOutput.OutputUserPosXToMiddleware,
-                        UserPosY = hapticOutput.OutputUserPosYToMiddleware,
-                        UserPosZ = hapticOutput.OutputUserPosZToMiddleware,
-                        OpPosX = hapticOutput.OutputOpPosXToMiddleware,
-                        OpPosY = hapticOutput.OutputOpPosYToMiddleware,
-                        OpPosZ = hapticOutput.OutputOpPosZToMiddleware
-                    };
+                        Console.WriteLine("Time is null");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Time is not null");
 
-                    var visualizationJson = JsonConvert.SerializeObject(visualizationInput);
-                    var visualizationBody = Encoding.UTF8.GetBytes(visualizationJson);
+                        var calculateNextPoint = userPointCalculator.CalculateNextStep(hapticOutput, Count);
 
-                    var inputJson = JsonConvert.SerializeObject(calculateNextPoint);
-                    var inputBody = Encoding.UTF8.GetBytes(inputJson);
+                        if (calculateNextPoint is null)
+                            throw new ArgumentNullException("The procedure seems to be finished");
 
-                    channel.BasicPublish(exchange: "dt",
-                                            routingKey: "visualization",
-                                            basicProperties: properties,
-                                            body: visualizationBody);
+                        var properties = channel.CreateBasicProperties();
+                        properties.Persistent = true;
 
-                    channel.BasicPublish(exchange: "dt",
-                                            routingKey: "input",
-                                            basicProperties: properties,
-                                            body: inputBody);
+                        var visualizationInput = new VisualizationInput()
+                        {
+                            UserPosX = hapticOutput.OutputUserPosXToMiddleware,
+                            UserPosY = hapticOutput.OutputUserPosYToMiddleware,
+                            UserPosZ = hapticOutput.OutputUserPosZToMiddleware,
+                            OpPosX = hapticOutput.OutputOpPosXToMiddleware,
+                            OpPosY = hapticOutput.OutputOpPosYToMiddleware,
+                            OpPosZ = hapticOutput.OutputOpPosZToMiddleware
+                        };
 
-                    Console.WriteLine($"Published message number: {Count}");
+                        var visualizationJson = JsonConvert.SerializeObject(visualizationInput);
+                        var visualizationBody = Encoding.UTF8.GetBytes(visualizationJson);
 
-                    Count++;
+                        var inputJson = JsonConvert.SerializeObject(calculateNextPoint);
+                        var inputBody = Encoding.UTF8.GetBytes(inputJson);
+
+                        Thread.Sleep(100);
+
+                        channel.BasicPublish(exchange: "dt",
+                                                routingKey: "visualization",
+                                                basicProperties: properties,
+                                                body: visualizationBody);
+
+                        channel.BasicPublish(exchange: "dt",
+                                                routingKey: "input",
+                                                basicProperties: properties,
+                                                body: inputBody);
+
+                        Console.WriteLine($"Published message number: {Count}");
+                    }
                 };
-                channel.BasicConsume(queue: "haptic-output",
-                                     autoAck: true,
-                                     consumer: consumer);
 
 
                 var json = JsonConvert.SerializeObject(initialUserInput);
@@ -156,7 +107,9 @@ namespace DigitalTwin.Middleware.DataInput.Services
                                         body: body);
                 Console.WriteLine($"Published message number: {Count}");
 
-                Count++;
+                channel.BasicConsume(queue: "fromsim",
+                     autoAck: false,
+                     consumer: consumer);
 
                 Console.WriteLine("Ready to receive events...");
                 Console.ReadLine();

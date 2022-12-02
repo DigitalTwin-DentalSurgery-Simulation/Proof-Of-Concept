@@ -40,9 +40,6 @@
     <ScalarVariable name="output_errorscore_to_haptics" valueReference="9" variability="continuous" causality="output" initial="calculated">
       <Real />
     </ScalarVariable>
-    <ScalarVariable name="input_step_to_op" valueReference="10" variability="discrete" causality="input">
-      <Integer start="0" />
-    </ScalarVariable>
   </ModelVariables>
   <ModelStructure>
     <Outputs>

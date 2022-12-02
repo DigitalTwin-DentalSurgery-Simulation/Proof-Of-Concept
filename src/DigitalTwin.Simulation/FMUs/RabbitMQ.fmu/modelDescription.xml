@@ -32,7 +32,6 @@
         <ScalarVariable name="input_hapticfeedback_z_to_middleware" valueReference="25" variability="continuous" causality="input">
             <Real start="0.0"/>
         </ScalarVariable>
-
         <ScalarVariable name="input_user_pos_x_to_middleware" valueReference="26" variability="continuous" causality="input">
             <Real start="0.0"/>
         </ScalarVariable>
@@ -42,7 +41,6 @@
         <ScalarVariable name="input_user_pos_z_to_middleware" valueReference="28" variability="continuous" causality="input">
             <Real start="0.0"/>
         </ScalarVariable>
-
         <ScalarVariable name="input_op_pos_x_to_middleware" valueReference="29" variability="continuous" causality="input">
             <Real start="0.0"/>
         </ScalarVariable>
@@ -52,7 +50,6 @@
         <ScalarVariable name="input_op_pos_z_to_middleware" valueReference="31" variability="continuous" causality="input">
             <Real start="0.0"/>
         </ScalarVariable>
-    
         <ScalarVariable name="config.hostname" valueReference="0" variability="fixed" causality="parameter" initial="exact">
             <String start="localhost"/>
         </ScalarVariable>
@@ -65,12 +62,9 @@
         <ScalarVariable name="config.password" valueReference="3" variability="fixed" causality="parameter" initial="exact">
             <String start="guest"/>
         </ScalarVariable>
-
-
         <ScalarVariable name="config.routingkey" valueReference="4" variability="fixed" causality="parameter" initial="exact">
             <String start="input"/>
         </ScalarVariable>
-
         <ScalarVariable name="config.communicationtimeout" valueReference="5" variability="fixed" causality="parameter" description="Network read time out in seconds" initial="exact">
             <Integer start="60"/>
         </ScalarVariable>

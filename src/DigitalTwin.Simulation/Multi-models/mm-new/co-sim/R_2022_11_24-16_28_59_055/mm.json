@@ -1,1 +1,0 @@
-{"fmus":{"{Rab}":"RabbitMQ.fmu","{FMU}":"Tester.fmu"},"connections":{"{Rab}.RabInstance.output_op_pos_x":["{FMU}.FMUInstance.string_a"]},"parameters":{}}

@@ -11,6 +11,17 @@ class Model:
         self.input_op_pos_z_to_haptics = 0.0
         self.input_errorscore_to_haptics = 0.0
 
+        self.temp_output_hapticfeedback_x_to_middleware = 0.0
+        self.temp_output_hapticfeedback_y_to_middleware = 0.0
+        self.temp_output_hapticfeedback_z_to_middleware = 0.0
+        self.temp_output_user_pos_x_to_middleware = 0.0
+        self.temp_output_user_pos_y_to_middleware = 0.0
+        self.temp_output_user_pos_z_to_middleware = 0.0
+        self.temp_output_op_pos_x_to_middleware = 0.0
+        self.temp_output_op_pos_y_to_middleware = 0.0
+        self.temp_output_op_pos_z_to_middleware = 0.0
+
+
         self.reference_to_attribute = {
             0: "input_user_pos_x_to_haptics",
             1: "input_user_pos_y_to_haptics",
@@ -34,6 +45,7 @@ class Model:
 
     def fmi2DoStep(self, current_time, step_size, no_step_prior):
         """Here do something with the input parameters"""
+        print("AJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ")
 
         """"Creating direction vectors"""
         direction_vector_x = self.input_op_pos_x_to_haptics - self.input_user_pos_x_to_haptics
@@ -54,9 +66,9 @@ class Model:
             applied_force = self.input_errorscore_to_haptics * yellow_zone_gradient_factor
 
         """Applying force to vector direction"""
-        self.output_hapticfeedback_x_to_middleware = direction_vector_x * applied_force
-        self.output_hapticfeedback_y_to_middleware = direction_vector_y * applied_force
-        self.output_hapticfeedback_z_to_middleware = direction_vector_z * applied_force
+        self.temp_output_hapticfeedback_x_to_middleware = direction_vector_x * applied_force
+        self.temp_output_hapticfeedback_y_to_middleware = direction_vector_y * applied_force
+        self.temp_output_hapticfeedback_z_to_middleware = direction_vector_z * applied_force
 
 
         self._update_outputs()
@@ -163,6 +175,9 @@ class Model:
         self.output_op_pos_x_to_middleware = self.input_op_pos_x_to_haptics
         self.output_op_pos_y_to_middleware = self.input_op_pos_y_to_haptics
         self.output_op_pos_z_to_middleware = self.input_op_pos_z_to_haptics
+        self.output_hapticfeedback_x_to_middleware = self.temp_output_hapticfeedback_x_to_middleware
+        self.output_hapticfeedback_y_to_middleware = self.temp_output_hapticfeedback_y_to_middleware
+        self.output_hapticfeedback_z_to_middleware = self.temp_output_hapticfeedback_z_to_middleware
 
 
 class Fmi2Status:
