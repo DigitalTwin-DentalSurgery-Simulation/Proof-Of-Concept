@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using DigitalTwin.Middleware.DataInput.Cache;
 
 namespace DigitalTwin.Middleware.DataInput.Services
 {
@@ -17,11 +18,13 @@ namespace DigitalTwin.Middleware.DataInput.Services
     {
         private static int Count = 0;
         private readonly UserPointCalculator userPointCalculator;
+        private readonly RecordingCache recordingCache;
         private static UserBehaviourInput? lastInput;
 
-        public RabbitMqService(UserPointCalculator userPointCalculator)
+        public RabbitMqService(UserPointCalculator userPointCalculator, RecordingCache recordingCache)
         {
             this.userPointCalculator = userPointCalculator;
+            this.recordingCache = recordingCache;
         }
 
         public Task PublishAndWaitForConsumerEvent(UserBehaviourInput initialUserInput)
@@ -32,7 +35,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
             using (var channel = connection.CreateModel())
             {
 
-                var consumer = new EventingBasicConsumer(channel);
+                /*var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
       
@@ -146,26 +149,36 @@ namespace DigitalTwin.Middleware.DataInput.Services
                         Console.WriteLine($"Published message number: {Count}");
                     }
                 };
+                */
 
 
-                var json = JsonConvert.SerializeObject(initialUserInput);
+                foreach (var item in recordingCache.GetData())
+                {
+                    var input = new UserBehaviourInput(item.Pos[0], item.Pos[1], item.Pos[2]);
 
-                var body = Encoding.UTF8.GetBytes(json);
+                    var json = JsonConvert.SerializeObject(input);
 
-                var properties = channel.CreateBasicProperties();
-                properties.Persistent = true;
+                    var body = Encoding.UTF8.GetBytes(json);
 
-                channel.BasicPublish(exchange: "dt",
-                    routingKey: "input",
-                    basicProperties: properties,
-                    body: body);
+                    var properties = channel.CreateBasicProperties();
+                    properties.Persistent = true;
 
-                Console.WriteLine($"Published message number: {Count}");
+                    Thread.Sleep(45);
 
-                channel.BasicConsume(queue: "fromsim",
+                    channel.BasicPublish(exchange: "dt",
+                        routingKey: "input",
+                        basicProperties: properties,
+                        body: body);
+
+                    Console.WriteLine($"Published message number: {Count}");
+
+                    Count += 1;
+                }
+
+                /*channel.BasicConsume(queue: "fromsim",
                      autoAck: true,
                      consumer: consumer);
-
+                */
                 Console.WriteLine("Ready to receive events...");
                 Console.ReadLine();
             }
