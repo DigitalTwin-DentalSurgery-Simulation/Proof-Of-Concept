@@ -16,6 +16,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
     public class RabbitMqService
     {
         private static int Count = 0;
+        private static int Discarded = 1;
         private readonly UserPointCalculator userPointCalculator;
         private static UserBehaviourInput? lastInput;
 
@@ -47,7 +48,60 @@ namespace DigitalTwin.Middleware.DataInput.Services
                     if (hapticOutput is null)
                         throw new ArgumentNullException(nameof(hapticOutput));
 
-                    if(hapticOutput.OutputOpPosXToMiddleware == default)
+                    var properties = channel.CreateBasicProperties();
+                    properties.Persistent = true;
+
+                    if (hapticOutput.OutputUserPosXToMiddleware == 0.0F)
+                    {
+                        Console.WriteLine($"Discard number: {Discarded}");
+
+                        Discarded += 1;
+
+                        return;
+                    }
+                        
+
+                    Count += 1;
+
+                    var calculateNextPoint = userPointCalculator.CalculateNextStep(hapticOutput, Count);
+
+                    lastInput = calculateNextPoint;
+
+                    if (calculateNextPoint is null)
+                        throw new ArgumentNullException("The procedure seems to be finished");
+
+                    var visualizationInput = new VisualizationInput()
+                    {
+                        UserPosX = hapticOutput.OutputUserPosXToMiddleware,
+                        UserPosY = hapticOutput.OutputUserPosYToMiddleware,
+                        UserPosZ = hapticOutput.OutputUserPosZToMiddleware,
+                        OpPosX = hapticOutput.OutputOpPosXToMiddleware,
+                        OpPosY = hapticOutput.OutputOpPosYToMiddleware,
+                        OpPosZ = hapticOutput.OutputOpPosZToMiddleware
+                    };
+
+                    var visualizationJson = JsonConvert.SerializeObject(visualizationInput);
+                    var visualizationBody = Encoding.UTF8.GetBytes(visualizationJson);
+
+                    var inputJson = JsonConvert.SerializeObject(calculateNextPoint);
+                    var inputBody = Encoding.UTF8.GetBytes(inputJson);
+
+                    Thread.Sleep(140);
+
+
+                    channel.BasicPublish(exchange: "dt",
+                                            routingKey: "input",
+                                            basicProperties: properties,
+                                            body: inputBody);
+
+                    channel.BasicPublish(exchange: "dt",
+                        routingKey: "visualization",
+                        basicProperties: properties,
+                        body: visualizationBody);
+
+                    Console.WriteLine($"Published message number: {Count}");
+
+                    /*if(hapticOutput.OutputOpPosXToMiddleware == default)
                     {
                         Console.WriteLine("Time is null");
 
@@ -67,84 +121,35 @@ namespace DigitalTwin.Middleware.DataInput.Services
                             routingKey: "input",
                             basicProperties: properties,
                             body: body2);
-                    }
-                    else if (hapticOutput.OutputUserPosXToMiddleware == default(float))
-                    {
-                        Console.WriteLine($"Value that triggers resend: {hapticOutput.OutputUserPosXToMiddleware}");
-                        Console.WriteLine("Resending....");
-
-                        // This is wrong - should not be initial again
-                        var json = JsonConvert.SerializeObject(initialUserInput);
-
-                        var body2 = Encoding.UTF8.GetBytes(json);
-
-                        var properties = channel.CreateBasicProperties();
-                        properties.Persistent = true;
-
-                        Thread.Sleep(45);
-
-                        if (lastInput is null)
-                            throw new ArgumentNullException(nameof(lastInput));
-
-                        lastInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
-
-                        var inputJson = JsonConvert.SerializeObject(lastInput);
-                        var inputBody = Encoding.UTF8.GetBytes(inputJson);
-
-                        channel.BasicPublish(exchange: "dt",
-                            routingKey: "input",
-                            basicProperties: properties,
-                            body: inputBody);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Time is not null");
-
-                        Count += 1;
-
-                        var calculateNextPoint = userPointCalculator.CalculateNextStep(hapticOutput, Count);
-
-                        lastInput = calculateNextPoint;
-
-                        if (calculateNextPoint is null)
-                            throw new ArgumentNullException("The procedure seems to be finished");
-
-                        var properties = channel.CreateBasicProperties();
-                        properties.Persistent = true;
-
-                        if(hapticOutput.OutputUserPosXToMiddleware == 0.0F)
-                            Console.WriteLine("It happened");
-
-                        var visualizationInput = new VisualizationInput()
+                    }*/
+                        /*else if (hapticOutput.OutputUserPosXToMiddleware == default(float))
                         {
-                            UserPosX = hapticOutput.OutputUserPosXToMiddleware,
-                            UserPosY = hapticOutput.OutputUserPosYToMiddleware,
-                            UserPosZ = hapticOutput.OutputUserPosZToMiddleware,
-                            OpPosX = hapticOutput.OutputOpPosXToMiddleware,
-                            OpPosY = hapticOutput.OutputOpPosYToMiddleware,
-                            OpPosZ = hapticOutput.OutputOpPosZToMiddleware
-                        };
+                            Console.WriteLine($"Value that triggers resend: {hapticOutput.OutputUserPosXToMiddleware}");
+                            Console.WriteLine("Resending....");
 
-                        var visualizationJson = JsonConvert.SerializeObject(visualizationInput);
-                        var visualizationBody = Encoding.UTF8.GetBytes(visualizationJson);
+                            // This is wrong - should not be initial again
+                            var json = JsonConvert.SerializeObject(initialUserInput);
 
-                        var inputJson = JsonConvert.SerializeObject(calculateNextPoint);
-                        var inputBody = Encoding.UTF8.GetBytes(inputJson);
+                            var body2 = Encoding.UTF8.GetBytes(json);
 
-                        Thread.Sleep(45);
+                            var properties = channel.CreateBasicProperties();
+                            properties.Persistent = true;
 
-                        channel.BasicPublish(exchange: "dt",
-                                                routingKey: "visualization",
-                                                basicProperties: properties,
-                                                body: visualizationBody);
+                            Thread.Sleep(45);
 
-                        channel.BasicPublish(exchange: "dt",
-                                                routingKey: "input",
-                                                basicProperties: properties,
-                                                body: inputBody);
+                            if (lastInput is null)
+                                throw new ArgumentNullException(nameof(lastInput));
 
-                        Console.WriteLine($"Published message number: {Count}");
-                    }
+                            lastInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
+
+                            var inputJson = JsonConvert.SerializeObject(lastInput);
+                            var inputBody = Encoding.UTF8.GetBytes(inputJson);
+
+                            channel.BasicPublish(exchange: "dt",
+                                routingKey: "input",
+                                basicProperties: properties,
+                                body: inputBody);
+                        }*/
                 };
 
 
