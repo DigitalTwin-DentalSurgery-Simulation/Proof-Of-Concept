@@ -27,16 +27,13 @@ class Model:
             6: "output_op_pos_x_to_haptics",
             7: "output_op_pos_y_to_haptics",
             8: "output_op_pos_z_to_haptics",
-            9: "output_errorscore_to_haptics"
+            9: "output_errorscore_to_haptics",
+            10: "input_step_to_op"
         }
 
         self._update_outputs()
 
     def fmi2DoStep(self, current_time, step_size, no_step_prior):
-        if(self.input_user_pos_x_to_op == 0.0):
-            self.input_user_pos_x_to_op = 2.00
-            self.input_user_pos_y_to_op = 2.00
-            self.input_user_pos_z_to_op = 2.00
         
         if(self.simtoCareJson is None):
             simtoCareJsonFilePath = "simtocare-recording.json"
@@ -44,8 +41,6 @@ class Model:
             self.simtoCareJson = json.load(simtoCareJsonFile)
         
         data = self.simtoCareJson['data'][self.input_step_to_op]
-
-        self.input_step_to_op += 1
     
         optimal_path_position = data['pos']
 
@@ -199,7 +194,9 @@ class Fmi2Status:
 
 if __name__ == "__main__":
 
-    simtoCareJsonFilePath = "resources/simtocare-recording.json"
+    print(os.getcwd())
+
+    simtoCareJsonFilePath = "OptimalPath.fmu/resources/simtocare-recording.json"
     simtoCareJsonFile = open(simtoCareJsonFilePath, 'r')
 
     if(simtoCareJsonFile.closed):

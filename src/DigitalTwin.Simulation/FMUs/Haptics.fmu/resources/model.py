@@ -3,9 +3,9 @@ import pickle
 
 class Model:
     def __init__(self) -> None:
-        self.input_user_pos_x_to_haptics = 3.0
-        self.input_user_pos_y_to_haptics = 2.0
-        self.input_user_pos_z_to_haptics = 1.0
+        self.input_user_pos_x_to_haptics = 0.0
+        self.input_user_pos_y_to_haptics = 0.0
+        self.input_user_pos_z_to_haptics = 0.0
         self.input_op_pos_x_to_haptics = 0.0
         self.input_op_pos_y_to_haptics = 0.0
         self.input_op_pos_z_to_haptics = 0.0
@@ -54,13 +54,13 @@ class Model:
         """Setting threshold for directed length based on errorscore"""
         yellow_zone_start_threshold = 0.10
         red_zone_start_threshold = 5.0
-        yellow_zone_gradient_factor = 0.10
+        yellow_zone_gradient_factor = 0.20
 
         """Calculating the force to be applied in the vector direction, based on errorscore"""
         if self.input_errorscore_to_haptics < yellow_zone_start_threshold:
             applied_force = 0
         elif self.input_errorscore_to_haptics >= red_zone_start_threshold:
-            applied_force = 0.5
+            applied_force = 1
         else:
             applied_force = self.input_errorscore_to_haptics * yellow_zone_gradient_factor
 

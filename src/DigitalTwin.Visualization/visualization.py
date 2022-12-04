@@ -4,18 +4,20 @@ import pika
 import os
 import sys
 import json
+import time
 
 class VisualizationOutput:
     def __init__(self, json):
-        self.output_user_pos_x = json['output_user_pos_x_to_visualization']
-        self.output_user_pos_y = json['output_user_pos_y_to_visualization']
-        self.output_user_pos_z = json['output_user_pos_z_to_visualization']
-        self.output_op_pos_x = json['output_op_pos_x_to_visualization']
-        self.output_op_pos_y = json['output_op_pos_y_to_visualization']
-        self.output_op_pos_z = json['output_op_pos_z_to_visualization']
+        self.output_user_pos_x = float(json['output_user_pos_x_to_visualization'])
+        self.output_user_pos_y = float(json['output_user_pos_y_to_visualization'])
+        self.output_user_pos_z = float(json['output_user_pos_z_to_visualization'])
+        self.output_op_pos_x = float(json['output_op_pos_x_to_visualization'])
+        self.output_op_pos_y = float(json['output_op_pos_y_to_visualization'])
+        self.output_op_pos_z = float(json['output_op_pos_z_to_visualization'])
 
 class Visualizer:
-    def __init__(self) -> None:
+    def __init__(self):
+        self.count = 0
         """graph arrays of values, to be on graph"""
         self.op_x_array = numpy.empty([0])
         self.op_y_array = numpy.empty([0])
@@ -33,36 +35,41 @@ class Visualizer:
         self.ax.set_xlabel('X')
         self.ax.set_ylabel('Y')
         self.ax.set_zlabel('Z')
+        
 
-def callback(self, ch, method, properties, body):
-    print(" [x] Received %r" % body)
+    def callback(self, ch, method, properties, body):
+        
 
-    message = json.loads(body)
+        print(" [x] Received %r" % body)
 
-    visualizationOutput = VisualizationOutput(message)
+        message = json.loads(body)
 
-    print(visualizationOutput.output_op_pos_x)
+        visualizationOutput = VisualizationOutput(message)
 
-    #time.sleep(2)
+        visualizationOutput.output_user_pos_x += self.count
 
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+        #time.sleep(2)
 
-    """make graph increase"""
-    self.op_x_array = numpy.append(self.op_x_array, visualizationOutput.output_op_pos_x)
-    self.op_y_array = numpy.append(self.op_y_array, visualizationOutput.output_op_pos_y)
-    self.op_z_array = numpy.append(self.op_z_array, visualizationOutput.output_op_pos_z)
+        """make graph increase"""
+        self.op_x_array = numpy.append(self.op_x_array, visualizationOutput.output_op_pos_x)
+        self.op_y_array = numpy.append(self.op_y_array, visualizationOutput.output_op_pos_y)
+        self.op_z_array = numpy.append(self.op_z_array, visualizationOutput.output_op_pos_z)
 
-    user_x_array = numpy.append(user_x_array, visualizationOutput.output_user_pos_x)
-    user_y_array = numpy.append(user_y_array, visualizationOutput.output_user_pos_y)
-    user_z_array = numpy.append(user_z_array, visualizationOutput.output_user_pos_z)
+        self.user_x_array = numpy.append(self.user_x_array, visualizationOutput.output_user_pos_x)
+        self.user_y_array = numpy.append(self.user_y_array, visualizationOutput.output_user_pos_y)
+        self.user_z_array = numpy.append(self.user_z_array, visualizationOutput.output_user_pos_z)
 
-    self.ax.plot(self.op_x_array, self.op_y_array, zs=self.op_z_array, zdir='z')
-    self.ax.plot(self.user_x_array, self.user_y_array, zs=self.user_z_array, zdir='z')
-            
-    plt.draw()
-    plt.pause(0.5)
+        self.ax.plot(self.op_x_array, self.op_y_array, zs=self.op_z_array, zdir='z')
+        self.ax.plot(self.user_x_array, self.user_y_array, zs=self.user_z_array, zdir='z')
+                
+        plt.draw()
+        plt.pause(0.5)
 
-    self.ax.cla()
+        self.ax.cla()
+
+        time.sleep(0.2)
+
+        ch.basic_ack(delivery_tag=method.delivery_tag)
 
 def main():
     visualization_queue = "visualization"
@@ -70,13 +77,16 @@ def main():
     connectionParameters = pika.ConnectionParameters(host = 'localhost', port = 5672)
 
     connection = pika.BlockingConnection(connectionParameters)
+
+    visuazer = Visualizer()
+
     channel = connection.channel()
 
     channel.basic_qos(prefetch_count = 1)
 
     channel.basic_consume(queue=visualization_queue,
                         auto_ack=False,
-                        on_message_callback=callback)
+                        on_message_callback=visuazer.callback)
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()

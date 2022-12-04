@@ -51,19 +51,61 @@ namespace DigitalTwin.Middleware.DataInput.Services
                     var properties = channel.CreateBasicProperties();
                     properties.Persistent = true;
 
+                    if(hapticOutput.OutputUserPosXToMiddleware == 5.0F)
+                    {
+                        Console.WriteLine($"We got default value {hapticOutput.OutputUserPosXToMiddleware}");
+
+                        lastInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
+
+                        var json = JsonConvert.SerializeObject(lastInput);
+
+                        var body2 = Encoding.UTF8.GetBytes(json);
+
+                        var properties2 = channel.CreateBasicProperties();
+                        properties.Persistent = true;
+
+                        Thread.Sleep(140);
+
+                        channel.BasicPublish(exchange: "dt",
+                            routingKey: "input",
+                            basicProperties: properties2,
+                            body: body2);
+                    }
+
                     if (hapticOutput.OutputUserPosXToMiddleware == 0.0F)
                     {
+                        Console.WriteLine(content);
                         Console.WriteLine($"Discard number: {Discarded}");
 
                         Discarded += 1;
+
+                        if(content == "{\"internal_status\":\"ready\", \"internal_message\":\"waiting for input data for simulation\"}")
+                        {
+                            lastInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
+
+                            var json = JsonConvert.SerializeObject(lastInput);
+
+                            var body2 = Encoding.UTF8.GetBytes(json);
+
+                            var properties2 = channel.CreateBasicProperties();
+                            properties.Persistent = true;
+
+                            Thread.Sleep(140);
+
+                            channel.BasicPublish(exchange: "dt",
+                                routingKey: "input",
+                                basicProperties: properties2,
+                                body: body2);
+                        }
 
                         return;
                     }
                         
 
+                    var calculateNextPoint = userPointCalculator.CalculateNextStep(hapticOutput, Count);
+
                     Count += 1;
 
-                    var calculateNextPoint = userPointCalculator.CalculateNextStep(hapticOutput, Count);
 
                     lastInput = calculateNextPoint;
 
@@ -122,54 +164,69 @@ namespace DigitalTwin.Middleware.DataInput.Services
                             basicProperties: properties,
                             body: body2);
                     }*/
-                        /*else if (hapticOutput.OutputUserPosXToMiddleware == default(float))
-                        {
-                            Console.WriteLine($"Value that triggers resend: {hapticOutput.OutputUserPosXToMiddleware}");
-                            Console.WriteLine("Resending....");
+                    /*else if (hapticOutput.OutputUserPosXToMiddleware == default(float))
+                    {
+                        Console.WriteLine($"Value that triggers resend: {hapticOutput.OutputUserPosXToMiddleware}");
+                        Console.WriteLine("Resending....");
 
-                            // This is wrong - should not be initial again
-                            var json = JsonConvert.SerializeObject(initialUserInput);
+                        // This is wrong - should not be initial again
+                        var json = JsonConvert.SerializeObject(initialUserInput);
 
-                            var body2 = Encoding.UTF8.GetBytes(json);
+                        var body2 = Encoding.UTF8.GetBytes(json);
 
-                            var properties = channel.CreateBasicProperties();
-                            properties.Persistent = true;
+                        var properties = channel.CreateBasicProperties();
+                        properties.Persistent = true;
 
-                            Thread.Sleep(45);
+                        Thread.Sleep(45);
 
-                            if (lastInput is null)
-                                throw new ArgumentNullException(nameof(lastInput));
+                        if (lastInput is null)
+                            throw new ArgumentNullException(nameof(lastInput));
 
-                            lastInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
+                        lastInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
 
-                            var inputJson = JsonConvert.SerializeObject(lastInput);
-                            var inputBody = Encoding.UTF8.GetBytes(inputJson);
+                        var inputJson = JsonConvert.SerializeObject(lastInput);
+                        var inputBody = Encoding.UTF8.GetBytes(inputJson);
 
-                            channel.BasicPublish(exchange: "dt",
-                                routingKey: "input",
-                                basicProperties: properties,
-                                body: inputBody);
-                        }*/
+                        channel.BasicPublish(exchange: "dt",
+                            routingKey: "input",
+                            basicProperties: properties,
+                            body: inputBody);
+                    }*/
                 };
 
 
-                var json = JsonConvert.SerializeObject(initialUserInput);
 
-                var body = Encoding.UTF8.GetBytes(json);
+                initialUserInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
 
-                var properties = channel.CreateBasicProperties();
-                properties.Persistent = true;
-
-                channel.BasicPublish(exchange: "dt",
-                    routingKey: "input",
-                    basicProperties: properties,
-                    body: body);
-
-                Console.WriteLine($"Published message number: {Count}");
+                lastInput = initialUserInput;
 
                 channel.BasicConsume(queue: "fromsim",
                      autoAck: true,
                      consumer: consumer);
+                
+                for (int i = 0; i < 5; i++)
+                {
+                    initialUserInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
+
+                    var json = JsonConvert.SerializeObject(initialUserInput);
+
+                    var body = Encoding.UTF8.GetBytes(json);
+
+                    var properties = channel.CreateBasicProperties();
+                    properties.Persistent = true;
+
+                    channel.BasicPublish(exchange: "dt",
+                        routingKey: "input",
+                        basicProperties: properties,
+                        body: body);
+
+                    Console.WriteLine($"Published message number: {Count}");
+
+                    Count += 1;
+
+                    Thread.Sleep(500);
+                }
+                
 
                 Console.WriteLine("Ready to receive events...");
                 Console.ReadLine();

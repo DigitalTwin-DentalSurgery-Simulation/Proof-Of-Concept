@@ -19,8 +19,8 @@ namespace DigitalTwin.Middleware.DataInput.Models
         [JsonProperty("output_op_pos_x_to_visualization")]
         public float OpPosX { get; set; }
         [JsonProperty("output_op_pos_y_to_visualization")]
-        public float OpPosZ { get; set; }
-        [JsonProperty("output_op_pos_z_to_visualization")]
         public float OpPosY { get; set; }
+        [JsonProperty("output_op_pos_z_to_visualization")]
+        public float OpPosZ { get; set; }
     }
 }

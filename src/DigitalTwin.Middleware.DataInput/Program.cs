@@ -39,7 +39,8 @@ var rabbitMqService = serviceProvider.GetRequiredService<RabbitMqService>();
 var dataInput = recording.Data.Select(dataInput => new UserBehaviourInput(
     dataInput.Pos[0],
     dataInput.Pos[1],
-    dataInput.Pos[2]
+    dataInput.Pos[2],
+    0
     )
 ).FirstOrDefault();
 

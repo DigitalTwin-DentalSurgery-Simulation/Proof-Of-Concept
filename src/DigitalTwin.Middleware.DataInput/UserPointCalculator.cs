@@ -35,7 +35,6 @@ namespace DigitalTwin.Middleware.DataInput
                 return null;
             }
 
-
             var currentXUserInput = currentRecordingData.Pos[0];
             var currentYUserInput = currentRecordingData.Pos[1];
             var currentZUserInput = currentRecordingData.Pos[2];
@@ -44,14 +43,11 @@ namespace DigitalTwin.Middleware.DataInput
             var nextYUserInput = nextRecordingData.Pos[1];
             var nextZUserInput = nextRecordingData.Pos[2];
 
+            var newUserXStep = hapticOutput.OutputUserPosXToMiddleware + hapticOutput.OutputHapticFeedbackX + GenerateRandomNoise(); //+ (nextXUserInput - currentXUserInput);
+            var newUserYStep = hapticOutput.OutputUserPosYToMiddleware + hapticOutput.OutputHapticFeedbackY + GenerateRandomNoise(); //(nextYUserInput - currentYUserInput)
+            var newUserZStep = hapticOutput.OutputUserPosZToMiddleware + hapticOutput.OutputHapticFeedbackZ + GenerateRandomNoise(); // (nextZUserInput - currentZUserInput)
 
-            var randomNoise = GenerateRandomNoise();
-
-            var newUserXStep = hapticOutput.OutputUserPosXToMiddleware + hapticOutput.OutputHapticFeedbackX + (nextXUserInput - currentXUserInput) + randomNoise;
-            var newUserYStep = hapticOutput.OutputUserPosYToMiddleware + hapticOutput.OutputHapticFeedbackY + (nextYUserInput - currentYUserInput) + randomNoise;
-            var newUserZStep = hapticOutput.OutputUserPosZToMiddleware + hapticOutput.OutputHapticFeedbackZ + (nextZUserInput - currentZUserInput) + randomNoise;
-
-            if(newUserXStep == 0.0F)
+            if (newUserXStep == 0.0F)
                 Console.WriteLine(
                     $"NewUserStepX = {newUserXStep} \n" +
                     $"NewUserStepY = {newUserYStep} \n" +
@@ -61,7 +57,8 @@ namespace DigitalTwin.Middleware.DataInput
             return new UserBehaviourInput(
                 newUserXStep,
                 newUserYStep,
-                newUserZStep
+                newUserZStep,
+                nextUserStep
                 );
         }
 
@@ -69,7 +66,7 @@ namespace DigitalTwin.Middleware.DataInput
         {
             var random = new Random();
 
-            var randomDouble = random.NextDouble(-0.05, 0.05);
+            var randomDouble = random.NextDouble(-0.01, 0.01);
 
             return (float) randomDouble + 0.001F;
         }

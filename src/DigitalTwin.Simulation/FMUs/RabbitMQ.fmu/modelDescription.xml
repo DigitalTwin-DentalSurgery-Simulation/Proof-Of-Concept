@@ -50,6 +50,9 @@
         <ScalarVariable name="input_op_pos_z_to_middleware" valueReference="31" variability="continuous" causality="input">
             <Real start="0.0"/>
         </ScalarVariable>
+        <ScalarVariable name="output_step_to_op" valueReference="32" variability="discrete" causality="output">
+            <Integer />
+        </ScalarVariable>
         <ScalarVariable name="config.hostname" valueReference="0" variability="fixed" causality="parameter" initial="exact">
             <String start="localhost"/>
         </ScalarVariable>
@@ -99,6 +102,7 @@
             <Unknown index="1"/>
             <Unknown index="2"/>
             <Unknown index="3"/>
+            <Unknown index="13"/>
         </Outputs>
         <InitialUnknowns>
             <Unknown index="1" />
@@ -113,6 +117,7 @@
             <Unknown index="10" />
             <Unknown index="11" />
             <Unknown index="12" />
+            <Unknown index="13" />
         </InitialUnknowns>
     </ModelStructure>
 

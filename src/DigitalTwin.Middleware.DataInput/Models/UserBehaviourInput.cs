@@ -10,11 +10,12 @@ namespace DigitalTwin.Middleware.DataInput.Models
 {
     public class UserBehaviourInput
     {
-        public UserBehaviourInput(float userPositionX, float userPositionY, float userPositionZ)
+        public UserBehaviourInput(float userPositionX, float userPositionY, float userPositionZ, int step)
         {
             UserPositionX = userPositionX;
             UserPositionY = userPositionY;
             UserPositionZ = userPositionZ;
+            Step = step;
         }
 
         [JsonProperty("time")]
@@ -25,5 +26,7 @@ namespace DigitalTwin.Middleware.DataInput.Models
         public float UserPositionY { get; set; }
         [JsonProperty("output_user_pos_z_to_op")]
         public float UserPositionZ { get; set; }
+        [JsonProperty("output_step_to_op")]
+        public int Step { get; set; }
     }
 }
