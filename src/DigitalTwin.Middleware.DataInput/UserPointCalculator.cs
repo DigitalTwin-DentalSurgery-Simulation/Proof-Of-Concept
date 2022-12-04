@@ -47,9 +47,9 @@ namespace DigitalTwin.Middleware.DataInput
 
             var randomNoise = GenerateRandomNoise();
 
-            var newUserXStep = currentXUserInput + hapticOutput.OutputHapticFeedbackX + (nextXUserInput - currentXUserInput) + randomNoise;
-            var newUserYStep = currentYUserInput + hapticOutput.OutputHapticFeedbackY + (nextYUserInput - currentYUserInput) + randomNoise;
-            var newUserZStep = currentZUserInput + hapticOutput.OutputHapticFeedbackZ + (nextZUserInput - currentZUserInput) + randomNoise;
+            var newUserXStep = hapticOutput.OutputUserPosXToMiddleware + hapticOutput.OutputHapticFeedbackX + (nextXUserInput - currentXUserInput) + randomNoise;
+            var newUserYStep = hapticOutput.OutputUserPosYToMiddleware + hapticOutput.OutputHapticFeedbackY + (nextYUserInput - currentYUserInput) + randomNoise;
+            var newUserZStep = hapticOutput.OutputUserPosZToMiddleware + hapticOutput.OutputHapticFeedbackZ + (nextZUserInput - currentZUserInput) + randomNoise;
 
             if(newUserXStep == 0.0F)
                 Console.WriteLine(
