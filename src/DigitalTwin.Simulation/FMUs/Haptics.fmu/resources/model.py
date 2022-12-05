@@ -10,6 +10,7 @@ class Model:
         self.input_op_pos_y_to_haptics = 0.0
         self.input_op_pos_z_to_haptics = 0.0
         self.input_errorscore_to_haptics = 0.0
+        self.input_step_to_haptics = 0
 
         self.temp_output_hapticfeedback_x_to_middleware = 0.0
         self.temp_output_hapticfeedback_y_to_middleware = 0.0
@@ -20,6 +21,8 @@ class Model:
         self.temp_output_op_pos_x_to_middleware = 0.0
         self.temp_output_op_pos_y_to_middleware = 0.0
         self.temp_output_op_pos_z_to_middleware = 0.0
+
+        self.output_step_to_middleware = 0
 
 
         self.reference_to_attribute = {
@@ -39,6 +42,8 @@ class Model:
             13: "output_op_pos_x_to_middleware",
             14: "output_op_pos_y_to_middleware",
             15: "output_op_pos_z_to_middleware",
+            16: "input_step_to_haptics",
+            17: "output_step_to_middleware"
         }
 
         self._update_outputs()
@@ -128,7 +133,8 @@ class Model:
                 self.input_op_pos_x_to_haptics,
                 self.input_op_pos_y_to_haptics,
                 self.input_op_pos_z_to_haptics,
-                self.input_errorscore_to_haptics,            
+                self.input_errorscore_to_haptics,
+                self.input_step_to_haptics         
             )
         )
         return Fmi2Status.ok, bytes
@@ -141,7 +147,8 @@ class Model:
             input_op_pos_x_to_haptics,
             input_op_pos_y_to_haptics,
             input_op_pos_z_to_haptics,
-            input_errorscore_to_haptics,      
+            input_errorscore_to_haptics,
+            input_step_to_haptics     
         ) = pickle.loads(bytes)
         self.input_user_pos_x_to_haptics = input_user_pos_x_to_haptics
         self.input_user_pos_y_to_haptics = input_user_pos_y_to_haptics
@@ -150,6 +157,7 @@ class Model:
         self.input_op_pos_y_to_haptics = input_op_pos_y_to_haptics
         self.input_op_pos_z_to_haptics = input_op_pos_z_to_haptics
         self.input_errorscore_to_haptics = input_errorscore_to_haptics
+        self.input_step_to_haptics = input_step_to_haptics
         self._update_outputs()
 
         return Fmi2Status.ok
@@ -183,6 +191,7 @@ class Model:
         self.output_hapticfeedback_x_to_middleware = self.temp_output_hapticfeedback_x_to_middleware
         self.output_hapticfeedback_y_to_middleware = self.temp_output_hapticfeedback_y_to_middleware
         self.output_hapticfeedback_z_to_middleware = self.temp_output_hapticfeedback_z_to_middleware
+        self.output_step_to_middleware = self.input_step_to_haptics
 
 
 class Fmi2Status:

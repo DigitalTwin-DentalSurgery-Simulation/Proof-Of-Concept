@@ -16,6 +16,7 @@ class Model:
         self.temp_output_op_pos_z_to_haptics = 0.0
 
         self.temp_output_errorscore_to_haptics = 0.0
+        self.output_step_to_haptics = 0
 
         self.reference_to_attribute = {
             0: "input_user_pos_x_to_op",
@@ -28,7 +29,8 @@ class Model:
             7: "output_op_pos_y_to_haptics",
             8: "output_op_pos_z_to_haptics",
             9: "output_errorscore_to_haptics",
-            10: "input_step_to_op"
+            10: "input_step_to_op",
+            11: "output_step_to_haptics"
         }
 
         self._update_outputs()
@@ -161,6 +163,7 @@ class Model:
         self.output_op_pos_y_to_haptics = self.temp_output_op_pos_y_to_haptics
         self.output_op_pos_z_to_haptics = self.temp_output_op_pos_z_to_haptics
         self.output_errorscore_to_haptics = self.temp_output_errorscore_to_haptics
+        self.output_step_to_haptics = self.input_step_to_op
 
 class Position:
     def __init__(self, json):

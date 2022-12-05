@@ -65,7 +65,12 @@
     <ScalarVariable name="output_op_pos_z_to_middleware" valueReference="15" variability="continuous" causality="output">
       <Real />
     </ScalarVariable>
-
+    <ScalarVariable name="input_step_to_haptics" valueReference="16" variability="discrete" causality="input">
+      <Integer start="0" />
+    </ScalarVariable>
+    <ScalarVariable name="output_step_to_middleware" valueReference="17" variability="discrete" causality="output">
+      <Integer />
+    </ScalarVariable>  
   </ModelVariables>
   <ModelStructure>
     <Outputs>
@@ -78,6 +83,7 @@
       <Unknown index="14" dependencies="" />
       <Unknown index="15" dependencies="" />
       <Unknown index="16" dependencies="" />
+      <Unknown index="18" dependencies="" />
     </Outputs>
     <InitialUnknowns>
       <Unknown index="8" dependencies="" />
@@ -89,6 +95,7 @@
       <Unknown index="14" dependencies="" />
       <Unknown index="15" dependencies="" />
       <Unknown index="16" dependencies="" />
+      <Unknown index="18" dependencies="" />
     </InitialUnknowns>
   </ModelStructure>
 </fmiModelDescription>

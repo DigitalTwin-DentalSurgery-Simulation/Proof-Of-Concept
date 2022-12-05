@@ -9,7 +9,7 @@ namespace DigitalTwin.Middleware.DataInput.Models
 {
     public class HapticOutput
     {
-        [JsonProperty("time")]
+        [JsonProperty("timestamp")]
         public string? Time { get; set; }
 
         [JsonProperty("input_hapticfeedback_x_to_middleware")]
@@ -32,5 +32,7 @@ namespace DigitalTwin.Middleware.DataInput.Models
         public float OutputOpPosYToMiddleware { get; set; }
         [JsonProperty("input_op_pos_z_to_middleware")]
         public float OutputOpPosZToMiddleware { get; set; }
+        [JsonProperty("input_step_to_middleware")]
+        public int StepSize { get; set; }
     }
 }

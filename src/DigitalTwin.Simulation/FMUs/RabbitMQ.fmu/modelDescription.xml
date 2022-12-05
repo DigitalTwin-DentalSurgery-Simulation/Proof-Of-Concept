@@ -53,6 +53,9 @@
         <ScalarVariable name="output_step_to_op" valueReference="32" variability="discrete" causality="output">
             <Integer />
         </ScalarVariable>
+        <ScalarVariable name="input_step_to_middleware" valueReference="33" variability="discrete" causality="input">
+            <Integer start="0" />
+        </ScalarVariable>
         <ScalarVariable name="config.hostname" valueReference="0" variability="fixed" causality="parameter" initial="exact">
             <String start="localhost"/>
         </ScalarVariable>

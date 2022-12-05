@@ -18,10 +18,10 @@ namespace DigitalTwin.Middleware.DataInput
             this.recordingCache = recordingCache;
         }
 
-        public UserBehaviourInput? CalculateNextStep(HapticOutput hapticOutput, int step)
+        public UserBehaviourInput? CalculateNextStep(HapticOutput hapticOutput)
         {
-            var currentUserStep = step;
-            var nextUserStep = step + 1;
+            var currentUserStep = hapticOutput.StepSize;
+            var nextUserStep = hapticOutput.StepSize + 1;
 
             Data? currentRecordingData;
             Data? nextRecordingData;
@@ -43,9 +43,9 @@ namespace DigitalTwin.Middleware.DataInput
             var nextYUserInput = nextRecordingData.Pos[1];
             var nextZUserInput = nextRecordingData.Pos[2];
 
-            var newUserXStep = hapticOutput.OutputUserPosXToMiddleware + hapticOutput.OutputHapticFeedbackX + GenerateRandomNoise(); //+ (nextXUserInput - currentXUserInput);
-            var newUserYStep = hapticOutput.OutputUserPosYToMiddleware + hapticOutput.OutputHapticFeedbackY + GenerateRandomNoise(); //(nextYUserInput - currentYUserInput)
-            var newUserZStep = hapticOutput.OutputUserPosZToMiddleware + hapticOutput.OutputHapticFeedbackZ + GenerateRandomNoise(); // (nextZUserInput - currentZUserInput)
+            var newUserXStep = hapticOutput.OutputUserPosXToMiddleware + hapticOutput.OutputHapticFeedbackX + (nextXUserInput - currentXUserInput) + GenerateRandomNoise();
+            var newUserYStep = hapticOutput.OutputUserPosYToMiddleware + hapticOutput.OutputHapticFeedbackY + (nextYUserInput - currentYUserInput) + GenerateRandomNoise();
+            var newUserZStep = hapticOutput.OutputUserPosZToMiddleware + hapticOutput.OutputHapticFeedbackZ + (nextZUserInput - currentZUserInput) +  GenerateRandomNoise();
 
             if (newUserXStep == 0.0F)
                 Console.WriteLine(

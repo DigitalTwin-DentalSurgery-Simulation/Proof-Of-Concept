@@ -102,7 +102,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
                     }
                         
 
-                    var calculateNextPoint = userPointCalculator.CalculateNextStep(hapticOutput, Count);
+                    var calculateNextPoint = userPointCalculator.CalculateNextStep(hapticOutput);
 
                     Count += 1;
 
