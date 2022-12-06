@@ -67,6 +67,10 @@ class Visualizer:
 
         self.ax.cla()
 
+        self.ax.set_xlabel('X')
+        self.ax.set_ylabel('Y')
+        self.ax.set_zlabel('Z')
+
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
 def main():

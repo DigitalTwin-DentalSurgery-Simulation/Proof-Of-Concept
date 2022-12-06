@@ -133,6 +133,8 @@ namespace DigitalTwin.Middleware.DataInput.Services
 
                     //Thread.Sleep(140);
 
+
+
                     channel.BasicPublish(exchange: "dt",
                                             routingKey: "input",
                                             basicProperties: properties,

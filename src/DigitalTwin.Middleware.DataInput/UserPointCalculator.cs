@@ -45,33 +45,51 @@ namespace DigitalTwin.Middleware.DataInput
 
             var random = new Random();
 
-            var randomMirrorMovementFactorX = (float) random.NextDouble(0.2, 1.8);
-            var randomMirrorMovementFactorY = (float)random.NextDouble(0.2, 1.8);
-            var randomMirrorMovementFactorZ = (float)random.NextDouble(0.2, 1.8);
+            var randomMirrorMovementFactorX = (float) random.NextDouble(0.5, 1.5);
+            var randomMirrorMovementFactorY = (float)random.NextDouble(0.5, 1.5);
+            var randomMirrorMovementFactorZ = (float)random.NextDouble(0.5, 1.5);
+            /*
+            var randomExtramovementX = 0.0F;
+            var randomExtraMovementY = 0.0F;
+            var randomExtraMovementZ = 0.0F;
+            */
+            //var randomDouble = random.NextDouble(1, 2);
+            //var negativeOrPositive = -1.0F;
 
-            var randomDouble = random.NextDouble(1, 2);
-            var negativeOrPositive = -1.5F;
-
-            if(randomDouble >= 1.5)
+            if (hapticOutput.StepSize % 120 <= 60)
             {
-                negativeOrPositive = 1.5F;
+                //negativeOrPositive = 1.0F;
             }
 
-            if(hapticOutput.StepSize % 20 <= 4)
+
+            var x = (hapticOutput.StepSize % 90) * 4;
+
+            var radiantInput = (x * (Math.PI)) / 180;
+
+            var y = Math.Sin(radiantInput) / 6.0F;
+            var z = Math.Sin(radiantInput) / 6.0F;
+
+            /*
+            if (hapticOutput.StepSize % 60 <= 20)
             {
                 // Add a more stepwise increase. like modulus + 0.05 -> +0,1 -> +40,15
-                randomMirrorMovementFactorX *= negativeOrPositive;
-                randomMirrorMovementFactorY *= negativeOrPositive;
-                randomMirrorMovementFactorZ *= negativeOrPositive;
+                var stepwiseBasedIncrement = (0.10 * (hapticOutput.StepSize % 30));
+
+                randomExtramovementX = (float)stepwiseBasedIncrement * negativeOrPositive;
+                randomExtraMovementY = (float)stepwiseBasedIncrement * negativeOrPositive;
+                randomExtraMovementZ = (float)stepwiseBasedIncrement * negativeOrPositive;
             }
+            */
 
             Console.WriteLine($"Random: {randomMirrorMovementFactorX} - {randomMirrorMovementFactorY}");
 
             Console.WriteLine($"Haptic Output: {hapticOutput.OutputHapticFeedbackX} - {hapticOutput.OutputHapticFeedbackY} - {hapticOutput.OutputHapticFeedbackZ}");
 
-            var newUserXStep = hapticOutput.OutputUserPosXToMiddleware + hapticOutput.OutputHapticFeedbackX + (nextXUserInput- currentXUserInput)* randomMirrorMovementFactorX;
-            var newUserYStep = hapticOutput.OutputUserPosYToMiddleware + hapticOutput.OutputHapticFeedbackY + (nextYUserInput- currentYUserInput)* randomMirrorMovementFactorY;
-            var newUserZStep = hapticOutput.OutputUserPosZToMiddleware + hapticOutput.OutputHapticFeedbackZ + (nextZUserInput - currentZUserInput)* randomMirrorMovementFactorZ;
+            Console.WriteLine($"Sinus Value y: {y} - Sinus Value Z: {z}");
+
+            var newUserXStep = hapticOutput.OutputUserPosXToMiddleware + hapticOutput.OutputHapticFeedbackX + (nextXUserInput - currentXUserInput);
+            var newUserYStep = hapticOutput.OutputUserPosYToMiddleware + hapticOutput.OutputHapticFeedbackY + (nextYUserInput - currentYUserInput) + (float)y;
+            var newUserZStep = hapticOutput.OutputUserPosZToMiddleware + hapticOutput.OutputHapticFeedbackZ + (nextZUserInput - currentZUserInput) + (float)z;
 
             if (newUserXStep == 0.0F)
                 Console.WriteLine(

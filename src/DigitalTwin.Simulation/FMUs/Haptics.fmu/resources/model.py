@@ -57,7 +57,7 @@ class Model:
         direction_vector_z = self.input_op_pos_z_to_haptics - self.input_user_pos_z_to_haptics
 
         """Setting threshold for directed length based on errorscore"""
-        yellow_zone_start_threshold = 0.02
+        yellow_zone_start_threshold = 0.10
         red_zone_start_threshold = 2.25
         yellow_zone_gradient_factor = 0.45
 
