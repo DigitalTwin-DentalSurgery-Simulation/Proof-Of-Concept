@@ -19,6 +19,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
         private static int Discarded = 1;
         private readonly UserPointCalculator userPointCalculator;
         private static UserBehaviourInput? lastInput;
+        private static int MaxStepSizeReceived = -1;
 
         public RabbitMqService(UserPointCalculator userPointCalculator)
         {
@@ -64,12 +65,14 @@ namespace DigitalTwin.Middleware.DataInput.Services
                         var properties2 = channel.CreateBasicProperties();
                         properties.Persistent = true;
 
-                        Thread.Sleep(140);
+                        //Thread.Sleep(140);
 
                         channel.BasicPublish(exchange: "dt",
                             routingKey: "input",
                             basicProperties: properties2,
                             body: body2);
+
+                        return;
                     }
 
                     if (hapticOutput.OutputUserPosXToMiddleware == 0.0F)
@@ -90,7 +93,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
                             var properties2 = channel.CreateBasicProperties();
                             properties.Persistent = true;
 
-                            Thread.Sleep(140);
+                            //Thread.Sleep(140);
 
                             channel.BasicPublish(exchange: "dt",
                                 routingKey: "input",
@@ -128,18 +131,25 @@ namespace DigitalTwin.Middleware.DataInput.Services
                     var inputJson = JsonConvert.SerializeObject(calculateNextPoint);
                     var inputBody = Encoding.UTF8.GetBytes(inputJson);
 
-                    Thread.Sleep(140);
-
+                    //Thread.Sleep(140);
 
                     channel.BasicPublish(exchange: "dt",
                                             routingKey: "input",
                                             basicProperties: properties,
                                             body: inputBody);
 
-                    channel.BasicPublish(exchange: "dt",
-                        routingKey: "visualization",
-                        basicProperties: properties,
-                        body: visualizationBody);
+                    if(MaxStepSizeReceived < hapticOutput.StepSize)
+                    {
+                        MaxStepSizeReceived = hapticOutput.StepSize;
+
+                        channel.BasicPublish(exchange: "dt",
+                            routingKey: "visualization",
+                            basicProperties: properties,
+                            body: visualizationBody);
+
+                        Console.WriteLine($"Visualization Queue Updated: {MaxStepSizeReceived}");
+
+                    }
 
                     Console.WriteLine($"Published message number: {Count}");
 
@@ -204,7 +214,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
                      autoAck: true,
                      consumer: consumer);
                 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 15; i++)
                 {
                     initialUserInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
 
@@ -224,7 +234,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
 
                     Count += 1;
 
-                    Thread.Sleep(500);
+                    Thread.Sleep(100);
                 }
                 
 

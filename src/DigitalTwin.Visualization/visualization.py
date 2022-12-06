@@ -63,11 +63,9 @@ class Visualizer:
         self.ax.plot(self.user_x_array, self.user_y_array, zs=self.user_z_array, zdir='z')
                 
         plt.draw()
-        plt.pause(0.5)
+        plt.pause(0.1)
 
         self.ax.cla()
-
-        time.sleep(0.2)
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
 

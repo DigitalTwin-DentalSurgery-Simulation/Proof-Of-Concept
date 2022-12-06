@@ -57,29 +57,26 @@ class Model:
         direction_vector_z = self.input_op_pos_z_to_haptics - self.input_user_pos_z_to_haptics
 
         """Setting threshold for directed length based on errorscore"""
-        yellow_zone_start_threshold = 0.10
-        red_zone_start_threshold = 5.0
-        yellow_zone_gradient_factor = 0.20
+        yellow_zone_start_threshold = 0.02
+        red_zone_start_threshold = 2.25
+        yellow_zone_gradient_factor = 0.45
 
         """Calculating the force to be applied in the vector direction, based on errorscore"""
         if self.input_errorscore_to_haptics < yellow_zone_start_threshold:
             applied_force = 0
         elif self.input_errorscore_to_haptics >= red_zone_start_threshold:
-            applied_force = 1
+            applied_force = 1.0
         else:
             applied_force = self.input_errorscore_to_haptics * yellow_zone_gradient_factor
+
+        print(f'Error score: {self.input_errorscore_to_haptics}')
 
         """Applying force to vector direction"""
         self.temp_output_hapticfeedback_x_to_middleware = direction_vector_x * applied_force
         self.temp_output_hapticfeedback_y_to_middleware = direction_vector_y * applied_force
         self.temp_output_hapticfeedback_z_to_middleware = direction_vector_z * applied_force
 
-        print(f'Haptics: {self.input_user_pos_x_to_haptics}')
-
         self._update_outputs()
-
-        if(self.output_user_pos_x_to_middleware == 0.0 or self.output_user_pos_y_to_middleware == 0.0 or self.output_user_pos_x_to_middleware == 0.0):
-            print("Haptic Output")
 
         return Fmi2Status.ok
 
@@ -181,7 +178,6 @@ class Model:
     """updating output values that are just propagated.
     """
     def _update_outputs(self):
-        print(f'UpdateOutputs: {self.input_user_pos_x_to_haptics}')
         self.output_user_pos_x_to_middleware = self.input_user_pos_x_to_haptics
         self.output_user_pos_y_to_middleware = self.input_user_pos_y_to_haptics
         self.output_user_pos_z_to_middleware = self.input_user_pos_z_to_haptics
