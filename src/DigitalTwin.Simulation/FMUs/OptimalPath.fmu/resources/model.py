@@ -48,11 +48,10 @@ class Model:
 
         optimalPathPosition = Position(optimal_path_position)
         
-        mean_absolute_error = abs(
-            self.input_user_pos_x_to_op-optimalPathPosition.optimal_path_x 
-            + self.input_user_pos_y_to_op-optimalPathPosition.optimal_path_y 
-            + self.input_user_pos_z_to_op-optimalPathPosition.optimal_path_z
-            ) / 3
+        mean_absolute_error = (
+            abs(self.input_user_pos_x_to_op-optimalPathPosition.optimal_path_x) + 
+            abs(self.input_user_pos_y_to_op-optimalPathPosition.optimal_path_y ) + 
+            abs(self.input_user_pos_z_to_op-optimalPathPosition.optimal_path_z)) / 3
 
         print(f'mean absute error: {mean_absolute_error}')
 

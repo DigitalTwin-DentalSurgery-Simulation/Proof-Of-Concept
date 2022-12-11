@@ -20,6 +20,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
         private readonly UserPointCalculator userPointCalculator;
         private static UserBehaviourInput? lastInput;
         private static int MaxStepSizeReceived = -1;
+        private static DateTime LastReceivedInput = DateTime.UtcNow;
 
         public RabbitMqService(UserPointCalculator userPointCalculator)
         {
@@ -142,6 +143,8 @@ namespace DigitalTwin.Middleware.DataInput.Services
 
                     if(MaxStepSizeReceived < hapticOutput.StepSize)
                     {
+                        LastReceivedInput = DateTime.UtcNow;
+
                         MaxStepSizeReceived = hapticOutput.StepSize;
 
                         channel.BasicPublish(exchange: "dt",
@@ -216,7 +219,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
                      autoAck: true,
                      consumer: consumer);
                 
-                for (int i = 0; i < 15; i++)
+                for (int i = 0; i < 1; i++)
                 {
                     initialUserInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
 
@@ -247,5 +250,14 @@ namespace DigitalTwin.Middleware.DataInput.Services
             return Task.CompletedTask;
         }
 
+    
+        public Task SendNewPoint(ref IModel channel)
+        {
+            while (true)
+            {
+
+            }
+        }
+    
     }
 }

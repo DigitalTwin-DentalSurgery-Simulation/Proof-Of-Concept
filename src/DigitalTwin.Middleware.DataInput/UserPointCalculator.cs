@@ -45,9 +45,9 @@ namespace DigitalTwin.Middleware.DataInput
 
             var random = new Random();
 
-            var randomMirrorMovementFactorX = (float) random.NextDouble(0.5, 1.5);
-            var randomMirrorMovementFactorY = (float)random.NextDouble(0.5, 1.5);
-            var randomMirrorMovementFactorZ = (float)random.NextDouble(0.5, 1.5);
+            var randomMirrorMovementFactorX = (float) random.NextDouble(0.2, 1.8);
+            var randomMirrorMovementFactorY = (float)random.NextDouble(0.2, 1.8);
+            var randomMirrorMovementFactorZ = (float)random.NextDouble(0.2, 1.8);
             /*
             var randomExtramovementX = 0.0F;
             var randomExtraMovementY = 0.0F;
@@ -66,8 +66,8 @@ namespace DigitalTwin.Middleware.DataInput
 
             var radiantInput = (x * (Math.PI)) / 180;
 
-            var y = Math.Sin(radiantInput) / 6.0F;
-            var z = Math.Sin(radiantInput) / 6.0F;
+            var y = Math.Sin(radiantInput) / 12.0F;
+            var z = Math.Sin(radiantInput) / 12.0F;
 
             /*
             if (hapticOutput.StepSize % 60 <= 20)
@@ -87,9 +87,9 @@ namespace DigitalTwin.Middleware.DataInput
 
             Console.WriteLine($"Sinus Value y: {y} - Sinus Value Z: {z}");
 
-            var newUserXStep = hapticOutput.OutputUserPosXToMiddleware + hapticOutput.OutputHapticFeedbackX + (nextXUserInput - currentXUserInput);
-            var newUserYStep = hapticOutput.OutputUserPosYToMiddleware + hapticOutput.OutputHapticFeedbackY + (nextYUserInput - currentYUserInput) + (float)y;
-            var newUserZStep = hapticOutput.OutputUserPosZToMiddleware + hapticOutput.OutputHapticFeedbackZ + (nextZUserInput - currentZUserInput) + (float)z;
+            var newUserXStep = hapticOutput.OutputUserPosXToMiddleware + hapticOutput.OutputHapticFeedbackX + (nextXUserInput - currentXUserInput)* randomMirrorMovementFactorX;
+            var newUserYStep = hapticOutput.OutputUserPosYToMiddleware + hapticOutput.OutputHapticFeedbackY + (nextYUserInput - currentYUserInput)* randomMirrorMovementFactorY + (float)y;
+            var newUserZStep = hapticOutput.OutputUserPosZToMiddleware + hapticOutput.OutputHapticFeedbackZ + (nextZUserInput - currentZUserInput)* randomMirrorMovementFactorZ + (float)z;
 
             if (newUserXStep == 0.0F)
                 Console.WriteLine(
