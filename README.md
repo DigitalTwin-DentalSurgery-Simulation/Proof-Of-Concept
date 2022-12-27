@@ -9,6 +9,8 @@ The proof of concept consists of 3 components, that should be run collectively
 
 ### [INTO-CPS co-simulation](src/DigitalTwin.Simulation)
 
+The INTO-CPS co-simulation runs the FMU's in the proof-of-concept, this includes RabbitFMU, HapticsFMU and OptimalPathFMU. This should be run as the first of the 3 components and wait for input from the middleware.
+
 #### Dependencies
 
 Install the INTO-CPS application, including Maestro 2. INTO-CPS can be found [here](https://github.com/INTO-CPS-Association/into-cps-application/releases).
@@ -17,6 +19,7 @@ Follow the installation guide and download Maestro 2 from the download manager i
 
 ### [Middleware](src/DigitalTwin.Middleware.DataInput)
 
+The middeware supplies the INTO-CPS simulation with generated user data using the SimtoCare file. Run this after you have started the INTO-CPS simulation.
 
 #### Dependencies
 
@@ -25,6 +28,8 @@ The middleware has .NET 6 Runtime as dependency. Download Visual Studio 2022 [he
 You will also need SimtoCare files as depency, these will are not public and should be requested. These will be submitted with the hand-in of this thesis.
 
 ### [Visualization](src/DigitalTwin.Visualization)
+
+The Visualization component gets it data from the RabbitMQ Server. You can start this after the Middleware or optionally run this after the simulation has finished and visualize the optimal path and user path.
 
 #### Dependencies
 
