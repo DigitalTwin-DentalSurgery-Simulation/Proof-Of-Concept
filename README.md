@@ -37,8 +37,7 @@ Python 3.10.x - Can be found [here](https://www.python.org/downloads/release/pyt
 
 Additionally, numpy, matplotlib and pika is required. Fetch using the requirements.txt file, located [here](src/DigitalTwin.Visualization)
 
-Then run:
-
+Run:
 ```
 pip install -r requirements.txt
 ```
@@ -51,8 +50,10 @@ All 3 components depend on RabbitMQ. Run it using docker-compose.
 
 [Download this folder](https://github.com/INTO-CPS-Association/fmu-rabbitmq/tree/development/server)
 
-Run: ```
-docker-compose up -d```
+Run: 
+```
+docker-compose up -d
+```
 
 
 ## Contribute
