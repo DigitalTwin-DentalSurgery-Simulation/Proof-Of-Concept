@@ -41,7 +41,8 @@ All 3 components depend on RabbitMQ. Run it using docker-compose.
 
 [Download this folder](https://github.com/INTO-CPS-Association/fmu-rabbitmq/tree/development/server)
 
-Run 'docker-compose up -d'
+Run ```bash
+docker-compose up -d```
 
 
 ## Contribute
