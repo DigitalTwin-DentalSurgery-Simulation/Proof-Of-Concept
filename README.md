@@ -35,6 +35,14 @@ The Visualization component gets it data from the RabbitMQ Server. You can start
 
 Python 3.10.x - Can be found [here](https://www.python.org/downloads/release/python-3109/)
 
+Additionally, numpy, matplotlib and pika is required. Fetch using the requirements.txt file, located [here](src/DigitalTwin.Visualization)
+
+Then run:
+
+```
+pip install -r requirements.txt
+```
+
 ### Common Depencies
 
 All 3 components depend on RabbitMQ. Run it using docker-compose.
