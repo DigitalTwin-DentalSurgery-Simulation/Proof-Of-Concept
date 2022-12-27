@@ -39,9 +39,11 @@ Python 3.10.x - Can be found [here](https://www.python.org/downloads/release/pyt
 
 All 3 components depend on RabbitMQ. Run it using docker-compose.
 
+[If you don't have docker, download Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
 [Download this folder](https://github.com/INTO-CPS-Association/fmu-rabbitmq/tree/development/server)
 
-Run ```bash
+Run: ```
 docker-compose up -d```
 
 
