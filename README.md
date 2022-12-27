@@ -7,10 +7,10 @@ This proof of concept aims to demonstrate the feasiability of Active Haptic Feed
 
 The proof of concept consists of 3 components, that should be run collectively
 
-INTO-CPS Simulation: [Simulation](src/DigitalTwin.Simulation)
+[INTO-CPS co-simulation](src/DigitalTwin.Simulation)
 
-Middleware: src/DigitalTwin.Middleware.DataInput
+[Middleware](src/DigitalTwin.Middleware.DataInput)
 
-Visualization: src/DigitalTwin.Visualization
+[Visualization](src/DigitalTwin.Visualization)
 
 
