@@ -43,3 +43,7 @@ Python 3.10.x - Can be found [here](https://www.python.org/downloads/release/pyt
 This project has [MIT License](LICENSE)
 
 Please make sure your need is within the license of the depencies.
+
+## Contribute
+
+Questions or do you want to raise an issue? Use the Issues tab in Github [link](https://github.com/DigitalTwin-DentalSurgery-Simulation/Proof-Of-Concept/issues)
