@@ -32,3 +32,9 @@ Python 3.10.x - Can be found [here](https://www.python.org/downloads/release/pyt
 
 
 
+
+### License
+
+This project has [MIT License](LICENSE)
+
+Please make sure your need is within the license of the depencies.
