@@ -35,6 +35,13 @@ The Visualization component gets it data from the RabbitMQ Server. You can start
 
 Python 3.10.x - Can be found [here](https://www.python.org/downloads/release/python-3109/)
 
+### Common Depencies
+
+All 3 components depend on RabbitMQ. Run it using docker-compose.
+
+[Download this folder](https://github.com/INTO-CPS-Association/fmu-rabbitmq/tree/development/server)
+
+Run 'docker-compose up -d'
 
 
 ## Contribute
