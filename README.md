@@ -56,7 +56,7 @@ docker-compose up -d
 ```
 
 
-## Contribute
+## Contributing
 
 Questions or do you want to raise an issue? [Use the Issues tab on Github](https://github.com/DigitalTwin-DentalSurgery-Simulation/Proof-Of-Concept/issues)
 
