@@ -123,7 +123,11 @@ namespace DigitalTwin.Middleware.DataInput.Services
                         UserPosZ = hapticOutput.OutputUserPosZToMiddleware,
                         OpPosX = hapticOutput.OutputOpPosXToMiddleware,
                         OpPosY = hapticOutput.OutputOpPosYToMiddleware,
-                        OpPosZ = hapticOutput.OutputOpPosZToMiddleware
+                        OpPosZ = hapticOutput.OutputOpPosZToMiddleware,
+                        HapticsX = hapticOutput.OutputHapticFeedbackX,
+                        HapticsY = hapticOutput.OutputHapticFeedbackY,
+                        HapticsZ = hapticOutput.OutputHapticFeedbackZ,
+                        Step = hapticOutput.StepSize
                     };
 
                     var visualizationJson = JsonConvert.SerializeObject(visualizationInput);
@@ -219,7 +223,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
                      autoAck: true,
                      consumer: consumer);
                 
-                for (int i = 0; i < 1; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     initialUserInput.Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss\\.ffffzzzz", CultureInfo.InvariantCulture);
 
@@ -239,7 +243,7 @@ namespace DigitalTwin.Middleware.DataInput.Services
 
                     Count += 1;
 
-                    Thread.Sleep(100);
+                    Thread.Sleep(400);
                 }
                 
 

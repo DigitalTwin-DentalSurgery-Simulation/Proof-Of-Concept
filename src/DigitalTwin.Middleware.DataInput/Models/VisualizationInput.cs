@@ -22,5 +22,9 @@ namespace DigitalTwin.Middleware.DataInput.Models
         public float OpPosY { get; set; }
         [JsonProperty("output_op_pos_z_to_visualization")]
         public float OpPosZ { get; set; }
+        public float HapticsX { get; set; }
+        public float HapticsY { get; set; }
+        public float HapticsZ { get; set; }
+        public int Step { get; set; }
     }
 }

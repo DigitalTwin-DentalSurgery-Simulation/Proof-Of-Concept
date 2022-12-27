@@ -14,6 +14,10 @@ class VisualizationOutput:
         self.output_op_pos_x = float(json['output_op_pos_x_to_visualization'])
         self.output_op_pos_y = float(json['output_op_pos_y_to_visualization'])
         self.output_op_pos_z = float(json['output_op_pos_z_to_visualization'])
+        self.output_op_haptics_x = float(json['HapticsX'])
+        self.output_op_haptics_y = float(json['HapticsY'])
+        self.output_op_haptics_z = float(json['HapticsZ'])
+        self.output_op_step = int(json['Step'])
 
 class Visualizer:
     def __init__(self):
@@ -27,6 +31,15 @@ class Visualizer:
         self.user_y_array = numpy.empty([0])
         self.user_z_array = numpy.empty([0])
 
+        self.haptics_x_array = numpy.empty([0])
+        self.haptics_y_array = numpy.empty([0])
+        self.haptics_z_array = numpy.empty([0])
+        self.haptics_step_array = numpy.empty([0])
+
+        self.lasttenxhaptics = 0.0
+        self.lasttenyhaptics = 0.0
+        self.lasttenzhaptics = 0.0
+
         """interactive on"""
         plt.ion()
         self.fig = plt.figure()
@@ -35,6 +48,13 @@ class Visualizer:
         self.ax.set_xlabel('X')
         self.ax.set_ylabel('Y')
         self.ax.set_zlabel('Z')
+
+
+
+        self.hapticsax = plt.figure().add_subplot(1,1,1)
+        self.hapticsax.legend()
+        self.hapticsax.set_xlabel('X')
+        self.hapticsax.set_ylabel('Y')
         
 
     def callback(self, ch, method, properties, body):
@@ -59,19 +79,51 @@ class Visualizer:
         self.user_y_array = numpy.append(self.user_y_array, visualizationOutput.output_user_pos_y)
         self.user_z_array = numpy.append(self.user_z_array, visualizationOutput.output_user_pos_z)
 
-        self.ax.plot(self.op_x_array, self.op_y_array, zs=self.op_z_array, zdir='z')
-        self.ax.plot(self.user_x_array, self.user_y_array, zs=self.user_z_array, zdir='z')
+        self.haptics_x_array = numpy.append(self.haptics_x_array, visualizationOutput.output_op_haptics_x)
+        self.haptics_y_array = numpy.append(self.haptics_y_array, visualizationOutput.output_op_haptics_y)
+        self.haptics_z_array = numpy.append(self.haptics_z_array, visualizationOutput.output_op_haptics_z)
+        self.haptics_step_array = numpy.append(self.haptics_step_array, visualizationOutput.output_op_step)
+
+        if(self.haptics_step_array[-1] % 10 == 0):
+            self.lasttenxhaptics = self.calculateAbsOfArray(self.haptics_x_array[-10:])
+            self.lasttenyhaptics = self.calculateAbsOfArray(self.haptics_y_array[-10:])
+            self.lasttenzhaptics = self.calculateAbsOfArray(self.haptics_z_array[-10:])
+
+        self.ax.annotate('Accumulated haptic \n feedback for last 10 readings:', xy=(-0.10, 0.01), xytext=(0, 10), xycoords=('axes fraction', 'figure fraction'), textcoords='offset points', ha='center', va='bottom')
+        self.ax.annotate(f'x: {self.lasttenxhaptics}', xy=(0.5, 0.035), xytext=(0, 10), xycoords=('axes fraction', 'figure fraction'), textcoords='offset points', ha='center', va='bottom')
+        self.ax.annotate(f'y: {self.lasttenyhaptics}', xy=(0.5, 0.01), xytext=(0, 10), xycoords=('axes fraction', 'figure fraction'), textcoords='offset points', ha='center', va='bottom')
+        self.ax.annotate(f'z: {self.lasttenzhaptics}', xy=(0.5, -0.015), xytext=(0, 10), xycoords=('axes fraction', 'figure fraction'), textcoords='offset points', ha='center', va='bottom')
+
+        self.ax.plot(self.op_x_array, self.op_y_array, zs=self.op_z_array, zdir='z', color="black", label='Optimal Path')
+        self.ax.plot(self.user_x_array, self.user_y_array, zs=self.user_z_array, zdir='z', color="green", label='User Path')
+        self.ax.legend()
+
+        self.hapticsax.plot(self.haptics_step_array, self.haptics_x_array, label='x-axis')
+        self.hapticsax.plot(self.haptics_step_array, self.haptics_y_array, label='y-axis')
+        self.hapticsax.plot(self.haptics_step_array, self.haptics_z_array, label='z-axis')
+        self.hapticsax.legend()
+
                 
         plt.draw()
-        plt.pause(0.1)
+        plt.pause(0.5)
 
+        
         self.ax.cla()
+
+        self.hapticsax.cla()
 
         self.ax.set_xlabel('X')
         self.ax.set_ylabel('Y')
         self.ax.set_zlabel('Z')
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
+
+    def calculateAbsOfArray(self, arr):
+        total = 0.0
+        for value in arr:
+            total += abs(value)
+
+        return total
 
 def main():
     visualization_queue = "visualization"
