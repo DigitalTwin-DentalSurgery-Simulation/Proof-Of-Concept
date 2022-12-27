@@ -46,4 +46,4 @@ Please make sure your need is within the license of the depencies.
 
 ## Contribute
 
-Questions or do you want to raise an issue? [Use the Issues tab in Github](https://github.com/DigitalTwin-DentalSurgery-Simulation/Proof-Of-Concept/issues)
+Questions or do you want to raise an issue? [Use the Issues tab on Github](https://github.com/DigitalTwin-DentalSurgery-Simulation/Proof-Of-Concept/issues)
