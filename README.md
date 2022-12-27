@@ -67,5 +67,5 @@ Do you have questions or wish to raise an issue? [Use the Issues tab on Github](
 
 This project has [MIT License](LICENSE)
 
-Please make sure your need is within the license of the depencies.
+Please make sure your need is within the license of the dependencies.
 
