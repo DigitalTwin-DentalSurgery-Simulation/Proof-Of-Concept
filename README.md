@@ -28,7 +28,7 @@ The middeware supplies the INTO-CPS simulation with generated user data using th
 
 The middleware has .NET 6 Runtime as dependency. Download Visual Studio 2022 [here](https://visualstudio.microsoft.com/vs/)
 
-You will also need SimtoCare files as depency, these will are not public and should be requested. These will be submitted with the hand-in of this thesis.
+You will also need SimtoCare files as depency, these are not public and should be requested. The files will be submitted with the hand-in of this thesis.
 
 ### [Visualization](src/DigitalTwin.Visualization)
 
