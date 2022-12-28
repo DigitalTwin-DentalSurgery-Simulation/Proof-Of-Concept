@@ -22,7 +22,7 @@ Follow the installation guide and download Maestro 2 from the download manager i
 
 ### [Middleware](src/DigitalTwin.Middleware.DataInput)
 
-The middeware supplies the INTO-CPS simulation with generated user data using the SimtoCare file. Run this after you have started the INTO-CPS simulation.
+The middeware supplies the INTO-CPS simulation with generated positional simulation data. Run this after you have started the INTO-CPS simulation.
 
 #### Dependencies
 
