@@ -32,7 +32,7 @@ You will also need SimtoCare files as depency, these are not public and should b
 
 ### [Visualization](src/DigitalTwin.Visualization)
 
-The Visualization component gets it data from the RabbitMQ Server. You can start this after the Middleware or optionally run this after the simulation has finished and visualize the optimal path and user path.
+The Visualization component receives it data from the RabbitMQ Server. You can start this after the Middleware or optionally run this after the simulation has finished and visualize the optimal path and user path.
 
 #### Dependencies
 
