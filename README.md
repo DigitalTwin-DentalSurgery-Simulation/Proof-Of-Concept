@@ -1,6 +1,6 @@
 # Proof-Of-Concept
 
-This proof of concept aims to demonstrate the feasiability of Active Haptic Feedback (AHF) applied to dental simulators.
+This proof of concept aims to demonstrate the feasibility of Active Haptic Feedback (AHF) applied to dental simulators.
 
 <p align="center">
 <img src="https://github.com/DigitalTwin-DentalSurgery-Simulation/Proof-Of-Concept/blob/main/docs/assets/media/visualization-2-images-stacked.png" width="500" height="500">
