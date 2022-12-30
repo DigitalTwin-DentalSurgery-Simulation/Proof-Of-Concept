@@ -12,7 +12,7 @@ The proof of concept consists of 3 components, that should be run collectively
 
 ### [INTO-CPS co-simulation](src/DigitalTwin.Simulation)
 
-The INTO-CPS co-simulation runs the FMU's in the proof-of-concept, this includes RabbitFMU, HapticsFMU and OptimalPathFMU. This should be run as the first of the 3 components and wait for input from the middleware.
+The INTO-CPS co-simulation runs the FMU's in the proof-of-concept, this includes RabbitmqFMU, HapticsFMU and OptimalPathFMU. This should be run as the first of the 3 components and wait for input from the middleware.
 
 #### Dependencies
 
