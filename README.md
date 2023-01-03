@@ -58,6 +58,16 @@ Run:
 docker-compose up -d
 ```
 
+3 queues have to be setup: fromsim, tosim, visualization.
+
+Create a new exchange, name it 'dt'. The exchange uses the following routing keys for 3 queues:
+
+| Queue         | Routing key   |
+|---------------|---------------|
+| fromsim       | from_cosim    |
+| tosim         | input         |
+| visualization | visualization |
+
 
 ## Contributing
 
